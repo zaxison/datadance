@@ -809,7 +809,7 @@ export default function App() {
       <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Routes>
-          <Route path="/" element={<Navigate to="/project" replace />} />
+          <Route path="/" element={<Navigate to="/task" replace />} />
           <Route path="*" element={<MainContent />} />
         </Routes>
       </div>
