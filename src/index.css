@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #5364FF;
+  --color-primary-light: #F0F2FF;
+  --color-sidebar: #F6F9FC;
+  --color-border: #E5E6EB;
+}
+
+:root {
+  --theme-color: #5364FF;
+}
+
+@layer base {
+  body {
+    background-color: #FFFFFF;
+    color: #1D2129;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer base {
+  button, 
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  /* Only apply underline to interactive text elements in black theme, explicitly excluding non-interactive tags/buttons */
+  .theme-black-active .text-\[var\(--primary-color\)\]:not(.no-underline):not(button):not(.menu-item-text):not(.tag-text):not(.title-text),
+  .theme-black-active button.table-action-btn {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  @keyframes ai-generating-pulse {
+    0%, 100% {
+      background-color: #F6F7FA;
+      box-shadow: 0 0 0 1px #E2E5F1;
+    }
+    50% {
+      background-color: #EBECF4;
+      box-shadow: 0 0 0 1px #EBECF4;
+    }
+  }
+
+  .ai-generating-pulse {
+    animation: ai-generating-pulse 1.33s ease-in-out infinite;
+  }
+}
