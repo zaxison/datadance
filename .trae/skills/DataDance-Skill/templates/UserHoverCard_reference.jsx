@@ -16,6 +16,29 @@ const signatures = [
   "OOO回学校改论文 有事可以留言～"
 ];
 
+// Preload images during browser idle time to prevent blank flashes on first hover
+if (typeof window !== 'undefined') {
+  const preloadImages = () => {
+    const assets = [
+      '/user-card-bg.png',
+      '/avatar.png',
+      '/user-card-msg.svg',
+      '/user-card-audio.svg',
+      '/user-card-video.svg'
+    ];
+    assets.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  };
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(preloadImages);
+  } else {
+    setTimeout(preloadImages, 1000);
+  }
+}
+
 const UserHoverCard = ({ name, avatar, onMouseLeave, onMouseEnter }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   // Memoize signature so it doesn't change on re-render
