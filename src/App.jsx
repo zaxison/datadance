@@ -22,7 +22,6 @@ import {
   CheckCircle2,
   MinusCircle,
   AlertCircle,
-  Home,
   LayoutDashboard,
   BarChart2,
   Menu,
@@ -129,6 +128,7 @@ const markdownComponents = {
 
 import TaskDetail from './TaskDetail';
 import MyTask from './MyTask';
+import Home from './Home';
 import { UserHoverWrapper } from './UserHoverCard';
 
 export function cn(...inputs) {
@@ -1341,7 +1341,8 @@ export default function App() {
       <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Routes>
-          <Route path="/" element={<Navigate to="/task" replace />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/mytask" element={<MyTask />} />
           <Route path="*" element={<MainContent />} />
         </Routes>
@@ -1384,6 +1385,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
   const navigate = useNavigate();
   
   const MENU_ROUTES = {
+    '/home': '首页',
     '/project': '项目管理',
     '/task': '任务列表',
     '/mytask': '我的任务',
@@ -1400,11 +1402,11 @@ function Sidebar({ isExpanded, setIsExpanded }) {
   
   const ROUTE_MENUS = Object.fromEntries(Object.entries(MENU_ROUTES).map(([k, v]) => [v, k]));
   
-  const activeMenu = MENU_ROUTES[location.pathname] || '任务列表';
+  const activeMenu = MENU_ROUTES[location.pathname] || '首页';
 
   // For initial expanded menus based on route
   useEffect(() => {
-    if (['任务列表', '我的任务', '模板管理', '组别管理'].includes(activeMenu)) {
+    if (['首页', '任务列表', '我的任务', '组别管理'].includes(activeMenu)) {
       setExpandedMenus(prev => prev.includes('数据生成') ? prev : [...prev, '数据生成']);
     } else if (['用户列表', '标签管理', '团队管理', '权限管理', '角色管理'].includes(activeMenu)) {
       setExpandedMenus(prev => prev.includes('用户管理') ? prev : [...prev, '用户管理']);
@@ -1544,6 +1546,15 @@ function Sidebar({ isExpanded, setIsExpanded }) {
         "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide mt-2 transition-[width,padding] duration-300 ease-in-out flex flex-col",
         isExpanded ? "px-[16px] space-y-1 w-[200px] items-stretch" : "px-[16px] items-center w-[72px]"
       )} style={{ gap: isExpanded ? '0' : '8px' }}>
+        <div onClick={() => handleMenuClick('首页')}>
+          <MenuItem 
+            icon="/menu-home.svg" 
+            label="首页" 
+            isExpanded={isExpanded} 
+            active={activeMenu === '首页'}
+            onSubmenuClick={handleMenuClick}
+          />
+        </div>
         <div onClick={() => handleMenuClick('项目管理')}>
           <MenuItem 
             icon="/menu-project-management.svg" 
@@ -1562,12 +1573,11 @@ function Sidebar({ isExpanded, setIsExpanded }) {
               label="数据生成" 
               isExpanded={isExpanded} 
               hasArrow 
-              active={!isExpanded && ['任务列表', '我的任务', '模板管理', '组别管理'].includes(activeMenu)} 
+              active={!isExpanded && ['任务列表', '我的任务', '组别管理'].includes(activeMenu)} 
               isSubmenuExpanded={expandedMenus.includes('数据生成')}
               submenus={[
                 { label: '任务列表', active: activeMenu === '任务列表' },
                 { label: '我的任务', active: activeMenu === '我的任务' },
-                { label: '模板管理', active: activeMenu === '模板管理' },
                 { label: '组别管理', active: activeMenu === '组别管理' }
               ]}
               onSubmenuClick={handleMenuClick}
@@ -1582,7 +1592,6 @@ function Sidebar({ isExpanded, setIsExpanded }) {
             {[
               '任务列表',
               '我的任务',
-              '模板管理',
               '组别管理'
             ].map((subItem) => (
               <div 
@@ -1652,6 +1661,15 @@ function Sidebar({ isExpanded, setIsExpanded }) {
           </div>
         </div>
 
+        <div onClick={() => handleMenuClick('模板管理')}>
+          <MenuItem 
+            icon="/menu-template.svg" 
+            label="模板管理" 
+            isExpanded={isExpanded} 
+            active={activeMenu === '模板管理'}
+            onSubmenuClick={handleMenuClick}
+          />
+        </div>
         <div onClick={() => handleMenuClick('申诉中心')}>
           <MenuItem icon="/menu-appeal-center.svg" label="申诉中心" isExpanded={isExpanded} active={activeMenu === '申诉中心'} onSubmenuClick={handleMenuClick} />
         </div>
@@ -2314,6 +2332,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
 function MainContent() {
   const location = useLocation();
   const MENU_ROUTES = {
+    '/home': '首页',
     '/project': '项目管理',
     '/task': '任务列表',
     '/mytask': '我的任务',
@@ -2327,7 +2346,7 @@ function MainContent() {
     '/appeal': '申诉中心',
     '/tenant': '租户管理',
   };
-  const activeMenuTitle = MENU_ROUTES[location.pathname] || '任务列表';
+  const activeMenuTitle = MENU_ROUTES[location.pathname] || '首页';
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
