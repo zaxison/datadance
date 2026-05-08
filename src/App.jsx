@@ -559,7 +559,7 @@ function FormField({ label, required, placeholder = '请输入', type = 'input',
 
 function AIAssistant({ isOpen, setIsOpen }) {
   // Use window.innerWidth/Height if available, fallback to 1000/800
-  const initialX = typeof window !== 'undefined' ? window.innerWidth - 96 : 904;
+  const initialX = typeof window !== 'undefined' ? window.innerWidth - 60 : 940;
   const initialY = typeof window !== 'undefined' ? window.innerHeight - 136 : 664;
   
   const [position, setPosition] = useState({ x: initialX, y: initialY });
@@ -723,13 +723,27 @@ function AIAssistant({ isOpen, setIsOpen }) {
       const processStreamVisuals = async () => {
          while (!done || displayedContent.length < fullContent.length || displayedReasoning.length < fullReasoning.length) {
             let updated = false;
+            let currentDelay = 15;
+            
             if (displayedReasoning.length < fullReasoning.length) {
-               const charsToAdd = fullReasoning.length - displayedReasoning.length > 20 ? 3 : 1;
+               const diff = fullReasoning.length - displayedReasoning.length;
+               let charsToAdd = 1;
+               if (diff > 200) { charsToAdd = Math.ceil(diff / 10); currentDelay = 5; }
+               else if (diff > 50) { charsToAdd = 4; currentDelay = 10; }
+               else if (diff > 20) { charsToAdd = 2; currentDelay = 15; }
+               else { charsToAdd = 1; currentDelay = 20; }
+               
                displayedReasoning += fullReasoning.slice(displayedReasoning.length, displayedReasoning.length + charsToAdd);
                updated = true;
             }
             if (displayedContent.length < fullContent.length) {
-               const charsToAdd = fullContent.length - displayedContent.length > 20 ? 3 : 1;
+               const diff = fullContent.length - displayedContent.length;
+               let charsToAdd = 1;
+               if (diff > 200) { charsToAdd = Math.ceil(diff / 10); currentDelay = 5; }
+               else if (diff > 50) { charsToAdd = 4; currentDelay = 10; }
+               else if (diff > 20) { charsToAdd = 2; currentDelay = 15; }
+               else { charsToAdd = 1; currentDelay = 20; }
+               
                displayedContent += fullContent.slice(displayedContent.length, displayedContent.length + charsToAdd);
                updated = true;
             }
@@ -761,7 +775,7 @@ function AIAssistant({ isOpen, setIsOpen }) {
                  isThinking: currentIsThinking 
                } : m));
                
-               await new Promise(r => setTimeout(r, 15)); // Smooth delay
+               await new Promise(r => setTimeout(r, currentDelay)); // Smooth delay
             } else {
                await new Promise(r => setTimeout(r, 10));
             }
@@ -874,8 +888,8 @@ function AIAssistant({ isOpen, setIsOpen }) {
         }
         
         if (draggedRef.current) {
-          const newX = Math.max(0, Math.min(e.clientX - 28, window.innerWidth - 56));
-          const newY = Math.max(0, Math.min(e.clientY - 28, window.innerHeight - 56));
+          const newX = Math.max(0, Math.min(e.clientX - 25, window.innerWidth - 50));
+          const newY = Math.max(0, Math.min(e.clientY - 25, window.innerHeight - 50));
           setPosition({ x: newX, y: newY });
         }
       }
@@ -891,12 +905,12 @@ function AIAssistant({ isOpen, setIsOpen }) {
           let finalY = position.y;
           
           const distLeft = position.x;
-          const distRight = window.innerWidth - position.x - 56;
+          const distRight = window.innerWidth - position.x - 50;
           
           if (distLeft < distRight) {
-            finalX = 40;
+            finalX = 10;
           } else {
-            finalX = window.innerWidth - 96;
+            finalX = window.innerWidth - 60;
           }
           
           setPosition({ x: finalX, y: finalY });
@@ -958,10 +972,10 @@ function AIAssistant({ isOpen, setIsOpen }) {
     const handleResize = () => {
       if (!isOpen && !isDragging) {
         setPosition(prev => {
-          const distRight = window.innerWidth - prev.x - 56;
+          const distRight = window.innerWidth - prev.x - 50;
           // Keep it on the right edge if it was there
-          if (distRight <= 40) {
-            return { ...prev, x: window.innerWidth - 96 };
+          if (distRight <= 10) {
+            return { ...prev, x: window.innerWidth - 60 };
           }
           return prev;
         });
@@ -977,7 +991,7 @@ function AIAssistant({ isOpen, setIsOpen }) {
       <div 
         ref={dragRef}
         className={cn(
-          "fixed w-[56px] h-[56px] rounded-full cursor-grab z-50 shadow-lg select-none",
+          "fixed w-[50px] h-[50px] rounded-full cursor-grab z-50 shadow-lg select-none",
           isDragging ? "cursor-grabbing transition-none" : "transition-all duration-300 hover:scale-105",
           isOpen ? "hidden" : "block"
         )}
@@ -1340,16 +1354,31 @@ export default function App() {
 
 
 function Sidebar({ isExpanded, setIsExpanded }) {
-  const [isHovered, setIsHovered] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState(['数据生成']);
   const [currentLogo, setCurrentLogo] = useState(localStorage.getItem('app-logo') || 'new');
 
   useEffect(() => {
-    const handleLogoChange = (e) => setCurrentLogo(e.detail);
+    // 监听 logo 变化以更新 favicon
+    const updateFavicon = (logo) => {
+      const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = logo === 'new' ? 'image/png' : 'image/svg+xml';
+      link.rel = 'icon';
+      link.href = logo === 'new' ? '/logo.png' : '/neeko.svg';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    };
+
+    // 初始化设置
+    updateFavicon(currentLogo);
+
+    const handleLogoChange = (e) => {
+      setCurrentLogo(e.detail);
+      updateFavicon(e.detail);
+    };
+    
     window.addEventListener('logo-changed', handleLogoChange);
     return () => window.removeEventListener('logo-changed', handleLogoChange);
-  }, []);
+  }, [currentLogo]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -1409,11 +1438,9 @@ function Sidebar({ isExpanded, setIsExpanded }) {
   return (
     <div 
       className={cn(
-        "relative h-full bg-sidebar border-r border-border transition-[width,padding] duration-300 ease-in-out flex flex-col z-10 flex-shrink-0",
+        "relative h-full bg-sidebar transition-[width,padding] duration-300 ease-in-out flex flex-col z-10 flex-shrink-0 group/sidebar",
         isExpanded ? "w-[200px]" : "w-[72px]"
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Header Area */}
       <div className={cn(
@@ -1440,7 +1467,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                 alt="logo" 
                 className={cn(
                   "w-full h-full object-contain transition-opacity duration-200 absolute top-0 left-0",
-                  !isExpanded ? "opacity-100 group-hover:opacity-0" : "opacity-100"
+                  !isExpanded ? "opacity-100 group-hover/sidebar:opacity-0" : "opacity-100"
                 )}
               />
             ) : (
@@ -1450,7 +1477,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                 xmlns="http://www.w3.org/2000/svg"
                 className={cn(
                   "w-full h-full object-cover transition-opacity duration-200 absolute top-0 left-0",
-                  !isExpanded ? "opacity-100 group-hover:opacity-0" : "opacity-100"
+                  !isExpanded ? "opacity-100 group-hover/sidebar:opacity-0" : "opacity-100"
                 )}
               >
                 <path d="M23.296 5.36621L14 10.7464L19.5286 13.9454L26.124 10.1318V6.98181L23.296 5.36621Z" fill="var(--primary-light)"/>
@@ -1467,7 +1494,10 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                 <img 
                   src="/expand-default.svg" 
                   alt="expand" 
-                  className="w-full h-full object-cover transition-opacity duration-200 absolute top-0 left-0 opacity-0 group-hover:opacity-100" 
+                  className={cn(
+                    "w-full h-full object-cover transition-opacity duration-200 absolute top-0 left-0",
+                    "opacity-0 group-hover/sidebar:opacity-100"
+                  )} 
                 />
                 <img 
                   src="/expand-hover.svg" 
@@ -1701,12 +1731,12 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                 }}>
                   <UserSettingItem 
                     icon="/user-setting-change-icon.svg" 
-                    label="更改图标" 
+                    label="更改图标 Dev" 
                     hasArrow={true}
                   />
                   <UserSettingItem 
                     icon="/user-setting-theme.svg" 
-                    label="主题配置" 
+                    label="主题配置 Dev" 
                     hasArrow={true}
                   />
                   <UserSettingItem icon="/user-setting-profile.svg" label="个人信息" />
@@ -1918,7 +1948,7 @@ function UserSettingItem({ icon, label, rightElement, isDestructive, hasArrow, o
         </div>,
         document.body
       )}
-      {hasArrow && label === '更改图标' && isHovered && createPortal(
+      {hasArrow && label === '更改图标 Dev' && isHovered && createPortal(
         <div 
           className="fixed flex flex-col bg-white z-[999999]"
           style={{
@@ -1981,7 +2011,7 @@ function UserSettingItem({ icon, label, rightElement, isDestructive, hasArrow, o
         </div>,
         document.body
       )}
-      {hasArrow && label === '主题配置' && isHovered && createPortal(
+      {hasArrow && label === '主题配置 Dev' && isHovered && createPortal(
         <div 
           className="fixed flex flex-col bg-white z-[999999]"
           style={{
@@ -2205,10 +2235,10 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
             </span>
             {hasArrow && (
               <span className={cn(
-                  "ml-auto flex-shrink-0 transition-all duration-300 ease-in-out",
+                  "ml-auto flex-shrink-0 transition-all duration-300 ease-in-out transform",
                   active ? "bg-[var(--primary-color)]" : "bg-[#3F3F51] group-hover:bg-[var(--primary-color)]",
                   isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4",
-                  isSubmenuExpanded ? "rotate-180" : ""
+                  isSubmenuExpanded ? "" : "rotate-180"
                 )}
               style={{
                 WebkitMask: `url(/up.svg) no-repeat center`,
