@@ -128,6 +128,7 @@ const markdownComponents = {
 
 import TaskDetail from './TaskDetail';
 import MyTask from './MyTask';
+import Home from './Home';
 import { UserHoverWrapper } from './UserHoverCard';
 
 export function cn(...inputs) {
@@ -1340,7 +1341,8 @@ export default function App() {
       <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <Routes>
-          <Route path="/" element={<Navigate to="/task" replace />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/mytask" element={<MyTask />} />
           <Route path="*" element={<MainContent />} />
         </Routes>
@@ -1354,7 +1356,7 @@ export default function App() {
 
 function Sidebar({ isExpanded, setIsExpanded }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState(['数据生成']);
+  const [expandedMenus, setExpandedMenus] = useState(['数据生产']);
   const [currentLogo, setCurrentLogo] = useState(localStorage.getItem('app-logo') || 'new');
 
   useEffect(() => {
@@ -1400,12 +1402,12 @@ function Sidebar({ isExpanded, setIsExpanded }) {
   
   const ROUTE_MENUS = Object.fromEntries(Object.entries(MENU_ROUTES).map(([k, v]) => [v, k]));
   
-  const activeMenu = MENU_ROUTES[location.pathname] || '任务列表';
+  const activeMenu = MENU_ROUTES[location.pathname] || '首页';
 
   // For initial expanded menus based on route
   useEffect(() => {
-    if (['任务列表', '我的任务', '组别管理'].includes(activeMenu)) {
-      setExpandedMenus(prev => prev.includes('数据生成') ? prev : [...prev, '数据生成']);
+    if (['首页', '任务列表', '我的任务', '组别管理'].includes(activeMenu)) {
+      setExpandedMenus(prev => prev.includes('数据生产') ? prev : [...prev, '数据生产']);
     } else if (['用户列表', '标签管理', '团队管理', '权限管理', '角色管理'].includes(activeMenu)) {
       setExpandedMenus(prev => prev.includes('用户管理') ? prev : [...prev, '用户管理']);
     }
@@ -1505,12 +1507,10 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                   className="w-full h-full object-cover transition-opacity duration-200 absolute top-0 left-0 opacity-0 hover:opacity-100 z-10" 
                 />
                 {/* Expand Tooltip */}
-                <div className="absolute left-[36px] top-1/2 -translate-y-1/2 bg-white text-[#0B0B0F] text-[13px] leading-[20px] font-medium px-[12px] py-[12px] rounded-[8px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1]">
+                <div className="absolute left-[40px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[12px] leading-[20px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
                   展开
-                  {/* Tooltip arrow (white) */}
-                  <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 border-y-[5px] border-y-transparent border-r-[5px] border-r-white z-10"></div>
-                  {/* Tooltip arrow border (matches border color) */}
-                  <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#E2E5F1]"></div>
+                  {/* Tooltip arrow */}
+                  <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#2B303A]"></div>
                 </div>
               </>
             )}
@@ -1565,14 +1565,14 @@ function Sidebar({ isExpanded, setIsExpanded }) {
         
         {/* Active Menu with Submenu (Data Generation) */}
         <div className={cn(isExpanded ? "mb-1" : "mb-0")}>
-          <div onClick={() => toggleMenu('数据生成')}>
+          <div onClick={() => toggleMenu('数据生产')}>
             <MenuItem 
               icon="/menu-data-generation.svg" 
-              label="数据生成" 
+              label="数据生产" 
               isExpanded={isExpanded} 
               hasArrow 
               active={!isExpanded && ['任务列表', '我的任务', '组别管理'].includes(activeMenu)} 
-              isSubmenuExpanded={expandedMenus.includes('数据生成')}
+              isSubmenuExpanded={expandedMenus.includes('数据生产')}
               submenus={[
                 { label: '任务列表', active: activeMenu === '任务列表' },
                 { label: '我的任务', active: activeMenu === '我的任务' },
@@ -1585,7 +1585,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
           {/* Submenu Items */}
           <div className={cn(
             "space-y-1 overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-in-out origin-top",
-            isExpanded && expandedMenus.includes('数据生成') ? "mt-1 max-h-[500px] opacity-100" : "max-h-0 opacity-0 m-0"
+            isExpanded && expandedMenus.includes('数据生产') ? "mt-1 max-h-[500px] opacity-100" : "max-h-0 opacity-0 m-0"
           )}>
             {[
               '任务列表',
@@ -2188,7 +2188,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
       const rect = menuRef.current.getBoundingClientRect();
       setTooltipPos({
         top: rect.top + rect.height / 2, // center of the container
-        left: 72 // Fixed distance to align exactly next to the 72px collapsed sidebar
+        left: 76 // 72px sidebar + 4px gap
       });
       setIsHovered(true);
     }
@@ -2270,38 +2270,31 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
 
       {/* Tooltip for collapsed state */}
       {!isExpanded && isHovered && createPortal(
-        <div 
-          className={cn(
-            "fixed bg-white rounded-lg shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1] py-2 px-1 flex flex-col transition-opacity duration-200 pointer-events-auto opacity-100"
-          )}
-          style={{
-            zIndex: 99999, // Ensure it's above everything including fixed modals
-            left: `${tooltipPos.left}px`,
-            top: `${tooltipPos.top}px`,
-            transform: 'translateY(-50%)',
-            minWidth: '120px'
-          }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {(!submenus || submenus.length === 0) ? (
-            <div 
-              className={cn(
-                "px-3 py-2 text-[14px] leading-[22px] font-medium whitespace-nowrap cursor-pointer rounded-md mx-1 transition-colors",
-                active ? "text-[var(--primary-color)] bg-[var(--primary-bg-hover)]" : "text-[#555B65] hover:text-[var(--primary-color)] hover:bg-[var(--primary-bg-hover)]"
-              )}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onSubmenuClick) {
-                  onSubmenuClick(label);
-                  setIsHovered(false);
-                }
-              }}
-            >
-              {label}
-            </div>
-          ) : (
-            submenus.map((sub, idx) => (
+        (!submenus || submenus.length === 0) ? (
+          <div 
+            className="fixed bg-[#2B303A] text-[#FFFFFF] text-[12px] leading-[20px] px-[8px] py-[6px] rounded-[4px] shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] whitespace-nowrap pointer-events-none z-[999999]"
+            style={{
+              left: `${tooltipPos.left}px`,
+              top: `${tooltipPos.top}px`,
+              transform: 'translateY(-50%)'
+            }}
+          >
+            {label}
+            <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#2B303A]"></div>
+          </div>
+        ) : (
+          <div 
+            className="fixed bg-white rounded-lg shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1] py-2 px-1 flex flex-col transition-opacity duration-200 pointer-events-auto opacity-100 z-[999999]"
+            style={{
+              left: `${tooltipPos.left}px`,
+              top: `${tooltipPos.top}px`,
+              transform: 'translateY(-50%)',
+              minWidth: '120px'
+            }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {submenus.map((sub, idx) => (
               <div 
                 key={idx}
                 onClick={(e) => {
@@ -2318,9 +2311,9 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
               >
                 {sub.label}
               </div>
-            ))
-          )}
-        </div>,
+            ))}
+          </div>
+        ),
         document.body
       )}
     </div>
@@ -2344,7 +2337,7 @@ function MainContent() {
     '/appeal': '申诉中心',
     '/tenant': '租户管理',
   };
-  const activeMenuTitle = MENU_ROUTES[location.pathname] || '任务列表';
+  const activeMenuTitle = MENU_ROUTES[location.pathname] || '首页';
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
