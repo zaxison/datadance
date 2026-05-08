@@ -170,20 +170,28 @@ export const UserHoverWrapper = ({ name, avatar, children }) => {
     // Calculate position
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
-    const cardHeight = 480; // estimated max height
+    const cardHeight = 520; // safe estimated max height
     const cardWidth = 320;
     
-    // Default to show below
-    let top = rect.bottom + 8;
-    // If not enough space below, but enough above, show above
-    if (spaceBelow < cardHeight && spaceAbove > cardHeight) {
-      top = rect.top - cardHeight - 8;
-    }
-    
-    // Ensure it doesn't go off the right edge
+    // Horizontal positioning
     let left = rect.left;
     if (left + cardWidth > window.innerWidth) {
       left = window.innerWidth - cardWidth - 16;
+    }
+    if (left < 16) {
+      left = 16; // ensure it doesn't go off the left edge
+    }
+
+    // Vertical positioning
+    let top = rect.bottom + 8;
+    if (spaceBelow < cardHeight) {
+      if (spaceAbove > cardHeight) {
+        // Show above if enough space
+        top = rect.top - cardHeight - 8;
+      } else {
+        // Not enough space above or below, clamp to window bottom
+        top = Math.max(16, window.innerHeight - cardHeight - 16);
+      }
     }
 
     setPos({ top, left });
