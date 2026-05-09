@@ -2966,6 +2966,7 @@ function TableRow({ data, isLast, onTaskClick }) {
   const [tooltipPos, setTooltipPos] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const [actionMenuPos, setActionMenuPos] = useState(null);
+  const [isFav, setIsFav] = useState(data.isFavorite || false);
   const timeoutRef = React.useRef(null);
   const actionTimeoutRef = React.useRef(null);
 
@@ -3090,17 +3091,18 @@ function TableRow({ data, isLast, onTaskClick }) {
       <td style={{ padding: '10px 10px' }}>
         <Star 
           size={16} 
-          color={data.isFavorite ? "#FAC515" : "#A7ADB9"}
-          fill={data.isFavorite ? "#FAC515" : "none"}
+          color={isFav ? "#FAC515" : "#A7ADB9"}
+          fill={isFav ? "#FAC515" : "none"}
           className="cursor-pointer transition-colors"
+          onClick={(e) => {
+            e.stopPropagation(); // prevent row click if needed
+            setIsFav(!isFav);
+          }}
           onMouseEnter={(e) => { 
             e.currentTarget.style.color = '#FAC515'; 
-            if (!data.isFavorite) {
-              e.currentTarget.setAttribute('fill', 'none'); // keep fill none on hover if not favorite, just outline yellow, or you can make it solid yellow. Let's make it yellow.
-            }
           }}
           onMouseLeave={(e) => { 
-            if (!data.isFavorite) {
+            if (!isFav) {
               e.currentTarget.style.color = '#A7ADB9'; 
             }
           }}
