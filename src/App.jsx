@@ -1514,19 +1514,6 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                 </div>
               </>
             )}
-            {isExpanded && (
-              <>
-                {/* Collapse button overlay for hover area */}
-                <div className="absolute top-0 left-0 w-full h-full opacity-0 hover:opacity-100 group z-20">
-                  {/* Collapse Tooltip */}
-                  <div className="absolute left-[40px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
-                    收起
-                    {/* Tooltip arrow */}
-                    <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#2B303A]"></div>
-                  </div>
-                </div>
-              </>
-            )}
           </div>
           <span 
               className={cn(
@@ -1540,16 +1527,27 @@ function Sidebar({ isExpanded, setIsExpanded }) {
         </div>
 
         {/* Collapse Button */}
-        <button 
-          onClick={() => setIsExpanded(false)}
-          className={cn(
-            "flex items-center justify-center flex-shrink-0 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-200/50 cursor-pointer absolute right-4 transition-all duration-300 ease-in-out origin-right",
-            isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none"
+        <div className="absolute right-4 group flex items-center justify-center">
+          <button 
+            onClick={() => setIsExpanded(false)}
+            className={cn(
+              "flex items-center justify-center flex-shrink-0 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-200/50 cursor-pointer transition-all duration-300 ease-in-out origin-right",
+              isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none"
+            )}
+            style={{ width: '28px', height: '28px' }}
+          >
+            <PanelLeftClose size={18} />
+          </button>
+          
+          {/* Collapse Tooltip */}
+          {isExpanded && (
+            <div className="absolute top-[38px] left-1/2 -translate-x-1/2 bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
+              收起
+              {/* Tooltip arrow pointing up */}
+              <div className="absolute left-1/2 top-[-6px] -translate-x-1/2 border-x-[6px] border-x-transparent border-b-[6px] border-b-[#2B303A]"></div>
+            </div>
           )}
-          style={{ width: '28px', height: '28px' }}
-        >
-          <PanelLeftClose size={18} />
-        </button>
+        </div>
       </div>
 
       {/* Menu Items */}
