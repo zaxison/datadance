@@ -1758,12 +1758,12 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                 }}>
                   <UserSettingItem 
                     icon="/user-setting-change-icon.svg" 
-                    label="更改图标 Dev" 
+                    label="更改图标 (dev)" 
                     hasArrow={true}
                   />
                   <UserSettingItem 
                     icon="/user-setting-theme.svg" 
-                    label="主题配置 Dev" 
+                    label="主题配置 (dev)" 
                     hasArrow={true}
                   />
                   <UserSettingItem icon="/user-setting-profile.svg" label="个人信息" />
@@ -1975,7 +1975,7 @@ function UserSettingItem({ icon, label, rightElement, isDestructive, hasArrow, o
         </div>,
         document.body
       )}
-      {hasArrow && label === '更改图标 Dev' && isHovered && createPortal(
+      {hasArrow && label === '更改图标 (dev)' && isHovered && createPortal(
         <div 
           className="fixed flex flex-col bg-white z-[999999]"
           style={{
@@ -2038,7 +2038,7 @@ function UserSettingItem({ icon, label, rightElement, isDestructive, hasArrow, o
         </div>,
         document.body
       )}
-      {hasArrow && label === '主题配置 Dev' && isHovered && createPortal(
+      {hasArrow && label === '主题配置 (dev)' && isHovered && createPortal(
         <div 
           className="fixed flex flex-col bg-white z-[999999]"
           style={{
