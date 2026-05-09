@@ -2283,7 +2283,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
       {!isExpanded && isHovered && createPortal(
         (!submenus || submenus.length === 0) ? (
           <div 
-            className="fixed bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] whitespace-nowrap pointer-events-none z-[999999] animate-in fade-in zoom-in-80 duration-150"
+            className="fixed bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] whitespace-nowrap pointer-events-none z-[999999] animate-in fade-in zoom-in-80 duration-150 origin-left"
             style={{
               left: `${tooltipPos.left}px`,
               top: `${tooltipPos.top}px`,
@@ -2295,7 +2295,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
           </div>
         ) : (
           <div 
-            className="fixed bg-white rounded-lg shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1] py-2 px-1 flex flex-col transition-opacity duration-200 pointer-events-auto opacity-100 z-[999999]"
+            className="fixed bg-white rounded-lg shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1] py-2 px-1 flex flex-col pointer-events-auto opacity-100 z-[999999] animate-in fade-in zoom-in-80 duration-150 origin-left"
             style={{
               left: `${tooltipPos.left}px`,
               top: `${tooltipPos.top}px`,
