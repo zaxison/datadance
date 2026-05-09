@@ -1507,10 +1507,23 @@ function Sidebar({ isExpanded, setIsExpanded }) {
                   className="w-full h-full object-cover transition-opacity duration-200 absolute top-0 left-0 opacity-0 hover:opacity-100 z-10" 
                 />
                 {/* Expand Tooltip */}
-                <div className="absolute left-[40px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[12px] leading-[20px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
+                <div className="absolute left-[40px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
                   展开
                   {/* Tooltip arrow */}
                   <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#2B303A]"></div>
+                </div>
+              </>
+            )}
+            {isExpanded && (
+              <>
+                {/* Collapse button overlay for hover area */}
+                <div className="absolute top-0 left-0 w-full h-full opacity-0 hover:opacity-100 group z-20">
+                  {/* Collapse Tooltip */}
+                  <div className="absolute left-[40px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
+                    收起
+                    {/* Tooltip arrow */}
+                    <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#2B303A]"></div>
+                  </div>
                 </div>
               </>
             )}
@@ -2272,7 +2285,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
       {!isExpanded && isHovered && createPortal(
         (!submenus || submenus.length === 0) ? (
           <div 
-            className="fixed bg-[#2B303A] text-[#FFFFFF] text-[12px] leading-[20px] px-[8px] py-[6px] rounded-[4px] shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] whitespace-nowrap pointer-events-none z-[999999]"
+            className="fixed bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] whitespace-nowrap pointer-events-none z-[999999]"
             style={{
               left: `${tooltipPos.left}px`,
               top: `${tooltipPos.top}px`,
