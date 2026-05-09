@@ -1541,7 +1541,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
           
           {/* Collapse Tooltip */}
           {isExpanded && (
-            <div className="absolute left-[36px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
+            <div className="absolute left-[40px] top-1/2 -translate-y-1/2 bg-[#2B303A] text-[#FFFFFF] text-[13px] leading-[22px] px-[8px] py-[6px] rounded-[4px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)]">
               收起
               {/* Tooltip arrow pointing left */}
               <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-[#2B303A]"></div>
