@@ -2295,7 +2295,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
           </div>
         ) : (
           <div 
-            className="fixed bg-white rounded-lg shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1] py-2 px-1 flex flex-col pointer-events-auto opacity-100 z-[999999] animate-zoom-in-fade origin-left"
+            className="fixed bg-white rounded-lg shadow-[0_15px_35px_-2px_rgba(0,0,0,0.05),0_5px_15px_0_rgba(0,0,0,0.05)] border border-[#E2E5F1] py-2 px-1 flex flex-col transition-opacity duration-200 pointer-events-auto opacity-100 z-[999999]"
             style={{
               left: `${tooltipPos.left}px`,
               top: `${tooltipPos.top}px`,
