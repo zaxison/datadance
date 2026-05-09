@@ -165,4 +165,19 @@
   .ai-generating-pulse {
     animation: ai-generating-pulse 1.33s ease-in-out infinite;
   }
+
+  @keyframes zoom-in-fade {
+    0% {
+      opacity: 0;
+      transform: translateY(-50%) scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+  }
+
+  .animate-zoom-in-fade {
+    animation: zoom-in-fade 0.15s ease-out forwards;
+  }
 }
