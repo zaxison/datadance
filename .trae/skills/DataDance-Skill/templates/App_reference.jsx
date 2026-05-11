@@ -2907,11 +2907,29 @@ function TableArea({ onTaskClick, activeTab }) {
     { id: '7438291048573629118', name: 'VQA-复杂场景测试', status: '已结束', tag: '试标', progress: [100, 100], avatar1: '/cat5.jpg', avatar2: '/cat1.jpg', isFavorite: false },
   ];
 
-  const data = rawData.map(item => ({
-    ...item,
-    creatorName: getName(),
-    modifierName: getName()
-  }));
+  // Helper to sync fav to localStorage
+  const handleFavToggle = (id, newFavState) => {
+    const savedFavs = JSON.parse(localStorage.getItem('user_favorites') || '{}');
+    if (newFavState) {
+      savedFavs[id] = true;
+    } else {
+      delete savedFavs[id];
+    }
+    localStorage.setItem('user_favorites', JSON.stringify(savedFavs));
+    
+    // trigger custom event to notify siblings
+    window.dispatchEvent(new CustomEvent('favorites-updated'));
+  };
+
+  const data = rawData.map(item => {
+    const savedFavs = JSON.parse(localStorage.getItem('user_favorites') || '{}');
+    return {
+      ...item,
+      creatorName: getName(),
+      modifierName: getName(),
+      isFavorite: savedFavs[item.id] === true || item.isFavorite
+    };
+  });
 
   // Hidden favorites from "other pages"
   const rawHiddenFavorites = [
@@ -2922,13 +2940,29 @@ function TableArea({ onTaskClick, activeTab }) {
     { id: '7438291048573629205', name: '自动驾驶-3D点云行人车辆标注队列', status: '进行中', tag: '正式', progress: [95, 90], avatar1: '/avatar.png', avatar2: '/cat1.jpg', isFavorite: true },
   ];
 
-  const hiddenFavorites = rawHiddenFavorites.map(item => ({
-    ...item,
-    creatorName: getName(),
-    modifierName: getName()
-  }));
+  const hiddenFavorites = rawHiddenFavorites.map(item => {
+    const savedFavs = JSON.parse(localStorage.getItem('user_favorites') || '{}');
+    // If it's explicitly unfavorited in localStorage, we can hide it here too, but for mock data let's just honor localStorage overrides
+    return {
+      ...item,
+      creatorName: getName(),
+      modifierName: getName(),
+      isFavorite: savedFavs[item.id] !== undefined ? savedFavs[item.id] : item.isFavorite
+    };
+  }).filter(item => item.isFavorite); // only show actual favorites in this mock array
 
-  const displayData = activeTab === '我的收藏' ? hiddenFavorites : data;
+  // Listen to cross-row fav updates
+  const [favUpdates, setFavUpdates] = useState(0);
+  useEffect(() => {
+    const handleFavUpdated = () => setFavUpdates(v => v + 1);
+    window.addEventListener('favorites-updated', handleFavUpdated);
+    return () => window.removeEventListener('favorites-updated', handleFavUpdated);
+  }, []);
+
+  // Combine dynamic data favorites with hidden favorites
+  const displayData = activeTab === '我的收藏' 
+    ? [...data.filter(item => item.isFavorite), ...hiddenFavorites]
+    : data;
 
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -2997,7 +3031,13 @@ function TableArea({ onTaskClick, activeTab }) {
             {columns}
             <tbody className="align-middle">
               {displayData.map((row, idx) => (
-                <TableRow key={row.id} data={row} isLast={idx === displayData.length - 1} onTaskClick={() => onTaskClick(row)} />
+                <TableRow 
+                  key={row.id} 
+                  data={row} 
+                  isLast={idx === displayData.length - 1} 
+                  onTaskClick={() => onTaskClick(row)} 
+                  onFavToggle={(newFavState) => handleFavToggle(row.id, newFavState)}
+                />
               ))}
               {/* Empty space filler to push rows to top if they don't fill the height */}
               <tr style={{ height: 'auto' }}>
@@ -3014,11 +3054,16 @@ function TableArea({ onTaskClick, activeTab }) {
   );
 }
 
-function TableRow({ data, isLast, onTaskClick }) {
+function TableRow({ data, isLast, onTaskClick, onFavToggle }) {
   const [tooltipPos, setTooltipPos] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const [actionMenuPos, setActionMenuPos] = useState(null);
   const [isFav, setIsFav] = useState(data.isFavorite || false);
+
+  // Sync internal state if prop changes
+  useEffect(() => {
+    setIsFav(data.isFavorite);
+  }, [data.isFavorite]);
   const timeoutRef = React.useRef(null);
   const actionTimeoutRef = React.useRef(null);
 
@@ -3148,7 +3193,9 @@ function TableRow({ data, isLast, onTaskClick }) {
           className="cursor-pointer transition-colors"
           onClick={(e) => {
             e.stopPropagation(); // prevent row click if needed
-            setIsFav(!isFav);
+            const newFav = !isFav;
+            setIsFav(newFav);
+            if (onFavToggle) onFavToggle(newFav);
           }}
           onMouseEnter={(e) => { 
             e.currentTarget.style.color = '#FAC515'; 
