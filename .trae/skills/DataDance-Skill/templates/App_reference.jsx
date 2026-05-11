@@ -1347,7 +1347,7 @@ export default function App() {
           '/up.svg',
           '/avatar.png',
           // Sidebar menu icons
-          '/menu-home01.svg',
+          '/menu-home.svg',
           '/menu-project.svg',
           '/menu-data-generation.svg',
           '/menu-appeal.svg',
@@ -1609,7 +1609,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
       )} style={{ gap: isExpanded ? '0' : '8px' }}>
         <div onClick={() => handleMenuClick('首页')}>
           <MenuItem 
-            icon="/menu-home01.svg" 
+            icon="/menu-home.svg" 
             label="首页" 
             isExpanded={isExpanded} 
             active={activeMenu === '首页'}
