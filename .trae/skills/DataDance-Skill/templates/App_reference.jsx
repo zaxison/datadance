@@ -1336,6 +1336,58 @@ export default function App() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
 
+  // Preload all icon assets during browser idle time to prevent slight flickering on first hover/click
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const preloadAssets = () => {
+        const assets = [
+          // Sidebar general icons
+          '/expand-default.svg',
+          '/expand-hover.svg',
+          '/up.svg',
+          '/avatar.png',
+          // Sidebar menu icons
+          '/menu-home.svg',
+          '/menu-project.svg',
+          '/menu-data-generation.svg',
+          '/menu-appeal.svg',
+          '/menu-tenant.svg',
+          '/menu-user-management.svg',
+          '/menu-template.svg',
+          // User settings icons
+          '/user-setting-change-icon.svg',
+          '/user-setting-theme.svg',
+          '/user-setting-profile.svg',
+          '/user-setting-permission.svg',
+          '/user-setting-switch-tenant.svg',
+          '/user-setting-language.svg',
+          '/user-setting-timezone.svg',
+          '/user-setting-clear-cache.svg',
+          '/user-setting-logout.svg',
+          // AI Assistant icons
+          '/ai-icon.svg',
+          '/ai-icon-hover.svg',
+          '/ai-spark.svg',
+          '/ai-avatar.png',
+          '/ai-stop.svg',
+          '/ai-copy.svg',
+          '/ai-collapse.svg',
+          '/ai-expand.svg'
+        ];
+        assets.forEach(src => {
+          const img = new Image();
+          img.src = src;
+        });
+      };
+
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(preloadAssets);
+      } else {
+        setTimeout(preloadAssets, 1000);
+      }
+    }
+  }, []);
+
   return (
     <div className="flex h-screen w-screen bg-white overflow-hidden text-[#1d2129]">
       <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
