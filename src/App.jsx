@@ -699,7 +699,7 @@ function AIAssistant({ isOpen, setIsOpen }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          model: 'MiniMax-M2.7', // 切换为支持的 M2.7 模型
+          model: 'deepseek-v4-flash', // 切换为 DeepSeek 模型
           messages: formattedMessages,
           stream: true
         }),
