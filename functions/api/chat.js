@@ -18,7 +18,7 @@ export async function onRequest(context) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: body.model || 'deepseek-v4-flash',
+        model: 'deepseek-chat', // DeepSeek 官方模型的名称通常是 deepseek-chat 或 deepseek-coder，deepseek-v4-flash可能不存在或不兼容
         messages: body.messages || [],
         stream: body.stream || false
       })
