@@ -10,15 +10,16 @@ export async function onRequest(context) {
     // In a real production scenario, this should be in context.env.DEEPSEEK_API_KEY
     const apiKey = 'sk-c63c623298324265a895dd8cd5f05f22';
 
-    // 适配 DeepSeek 或火山引擎方舟的 Endpoint
-    const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
+    // 适配 DeepSeek 官方 Endpoint
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: body.model || 'deepseek-v4-flash', // 以火山引擎/用量看板中的名称为准
+        model: 'deepseek-v4-flash', 
+        reasoning_effort: 'high', // 触发思考模式
         messages: body.messages || [],
         stream: body.stream || false
       })

@@ -699,7 +699,8 @@ function AIAssistant({ isOpen, setIsOpen }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          model: 'deepseek-v4-flash', // 切换为 DeepSeek 模型
+          model: 'deepseek-v4-flash', 
+          reasoning_effort: 'high', // 触发思考模式
           messages: formattedMessages,
           stream: true
         }),

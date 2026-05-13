@@ -8,12 +8,12 @@ export default defineConfig({
     allowedHosts: ['skintight-aids-attire.ngrok-free.dev'],
     proxy: {
       '/api/chat': {
-        target: 'https://api.minimax.chat',
+        target: 'https://api.deepseek.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/chat/, '/v1/text/chatcompletion_v2'),
+        rewrite: (path) => path.replace(/^\/api\/chat/, '/chat/completions'),
         configure: (proxy, options) => {
           proxy.on('proxyReq', (proxyReq, req, res) => {
-            proxyReq.setHeader('Authorization', 'Bearer sk-cp-FNNPuDlXvE0RV7QD50WBeh7T_CVkWPG2BaujL64oemMyFVFWvrWh2Lc0z9vs368ujBWWiQYtOUdp4RPe_IFKw651XsV0yfgMbDR8oELd9vXXcZjDiT-omzQ');
+            proxyReq.setHeader('Authorization', 'Bearer sk-c63c623298324265a895dd8cd5f05f22');
             proxyReq.setHeader('Content-Type', 'application/json');
           });
         }
