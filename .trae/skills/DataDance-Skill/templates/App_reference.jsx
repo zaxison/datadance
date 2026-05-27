@@ -342,7 +342,7 @@ const themes = {
     '--primary-color': '#5372FF',
     '--primary-light': '#8DA0FF',
     '--primary-dark': '#2943CC',
-    '--primary-bg-hover': '#EDF0FF',
+    '--primary-bg-hover': '#E6E9FA',
     '--primary-bg-light': '#EDF0FF',
     '--primary-shadow': 'rgba(83, 114, 255, 0.30)',
     '--primary-border': '#B8C4FF'
