@@ -1390,15 +1390,17 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen bg-white overflow-hidden text-[#1d2129]">
+    <div className="flex h-screen w-screen bg-sidebar overflow-hidden text-[#1d2129]">
       <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/mytask" element={<MyTask />} />
-          <Route path="*" element={<MainContent />} />
-        </Routes>
+      <div className="flex-1 flex flex-col h-full overflow-hidden py-[8px] pr-[8px]">
+        <div className="flex-1 flex flex-col bg-white rounded-[12px] overflow-hidden relative">
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/mytask" element={<MyTask />} />
+            <Route path="*" element={<MainContent />} />
+          </Routes>
+        </div>
       </div>
       <AIAssistant isOpen={isAIAssistantOpen} setIsOpen={setIsAIAssistantOpen} />
     </div>
@@ -2446,7 +2448,7 @@ function MainContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-white m-0 pt-[20px] pr-[20px] pl-[20px] pb-0 h-screen relative">
+    <div className="flex-1 flex flex-col min-w-0 bg-white m-0 pt-[20px] pr-[20px] pl-[20px] pb-0 h-full relative">
       {currentView === 'list' ? (
         <div className="flex-1 flex flex-col gap-[16px] overflow-hidden">
           <TitleArea onCreateClick={() => setIsCreateModalOpen(true)} title={activeMenuTitle} />
