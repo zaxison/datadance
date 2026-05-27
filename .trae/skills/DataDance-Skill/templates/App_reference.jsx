@@ -276,10 +276,10 @@ const HistorySessionItem = ({ session, onSelect, onDelete }) => {
 
 const themes = {
   '#5364FF': {
-        '--primary-color': '#5364FF',
+    '--primary-color': '#5364FF',
     '--primary-light': '#8491FF',
     '--primary-dark': '#3F4CC2',
-    '--primary-bg-hover': '#EDEFFC',
+    '--primary-bg-hover': '#E6E9FA',
     '--primary-bg-light': '#F5F7FF',
     '--primary-shadow': 'rgba(82, 82, 255, 0.30)',
     '--primary-border': '#8E96FF'
