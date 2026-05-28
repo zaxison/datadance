@@ -124,7 +124,6 @@ const MarkdownCodeBlock = ({ node, inline, className, children, ...props }) => {
 const MENU_CONFIG = [
   { id: '首页', icon: '/menu-home.svg', path: '/home' },
   { id: '项目管理', icon: '/menu-project-management.svg', path: '/project' },
-  { id: '算子管理', icon: '/menu-operator-management.svg', path: '/operator' },
   { id: '数据生产', icon: '/menu-data-generation.svg', submenus: [
     { id: '数据生产-任务列表', label: '任务列表', path: '/data-task' },
     { id: '数据生产-我的任务', label: '我的任务', path: '/data-mytask' },
@@ -139,11 +138,12 @@ const MENU_CONFIG = [
     { id: '模型评估-人员标签', label: '人员标签', path: '/eval-personnel' },
     { id: '模型评估-数据可视化', label: '数据可视化', path: '/eval-viz' },
   ]},
-  { id: '模板管理', icon: '/menu-template.svg', path: '/template' },
-  { id: '资产管理', icon: '/menu-asset-management.svg', path: '/asset' },
   { id: '质量管理', icon: '/menu-quality-management.svg', submenus: [
     { id: '质量管理-申诉中心', label: '申诉中心', path: '/quality-appeal' },
   ]},
+  { id: '模板管理', icon: '/menu-template.svg', path: '/template' },
+  { id: '资产管理', icon: '/menu-asset-management.svg', path: '/asset' },
+  { id: '算子管理', icon: '/menu-operator-management.svg', path: '/operator' },
   { id: '用户管理', icon: '/menu-user-management.svg', submenus: [
     { id: '用户管理-标签管理', label: '标签管理', path: '/user-tag' },
     { id: '用户管理-团队管理', label: '团队管理', path: '/user-team' },
