@@ -121,6 +121,57 @@ const MarkdownCodeBlock = ({ node, inline, className, children, ...props }) => {
   return <code className={className} {...props}>{children}</code>;
 };
 
+const MENU_CONFIG = [
+  { id: '首页', icon: '/menu-home.svg', path: '/home' },
+  { id: '项目管理', icon: '/menu-project-management.svg', path: '/project' },
+  { id: '算子管理', icon: '/menu-operator-management.svg', path: '/operator' },
+  { id: '数据生产', icon: '/menu-data-generation.svg', submenus: [
+    { id: '数据生产-任务列表', label: '任务列表', path: '/data-task' },
+    { id: '数据生产-我的任务', label: '我的任务', path: '/data-mytask' },
+    { id: '数据生产-组别管理', label: '组别管理', path: '/data-group' },
+  ]},
+  { id: '模型评估', icon: '/menu-model-evaluation.svg', submenus: [
+    { id: '模型评估-题库管理', label: '题库管理', path: '/eval-question' },
+    { id: '模型评估-抓取任务', label: '抓取任务', path: '/eval-crawl' },
+    { id: '模型评估-任务列表', label: '任务列表', path: '/eval-task' },
+    { id: '模型评估-我的任务', label: '我的任务', path: '/eval-mytask' },
+    { id: '模型评估-评估报告', label: '评估报告', path: '/eval-report' },
+    { id: '模型评估-人员标签', label: '人员标签', path: '/eval-personnel' },
+    { id: '模型评估-数据可视化', label: '数据可视化', path: '/eval-viz' },
+  ]},
+  { id: '模板管理', icon: '/menu-template.svg', path: '/template' },
+  { id: '资产管理', icon: '/menu-asset-management.svg', path: '/asset' },
+  { id: '质量管理', icon: '/menu-quality-management.svg', submenus: [
+    { id: '质量管理-申诉中心', label: '申诉中心', path: '/quality-appeal' },
+  ]},
+  { id: '用户管理', icon: '/menu-user-management.svg', submenus: [
+    { id: '用户管理-标签管理', label: '标签管理', path: '/user-tag' },
+    { id: '用户管理-团队管理', label: '团队管理', path: '/user-team' },
+  ]},
+  { id: '租户管理', icon: '/menu-tenant-management.svg', path: '/tenant' },
+];
+
+const GLOBAL_MENU_ROUTES = {};
+const GLOBAL_ROUTE_MENUS = {};
+const GLOBAL_MENU_PARENTS = {}; // Map submenu id to parent id
+const GLOBAL_MENU_LABELS = {};
+
+MENU_CONFIG.forEach(item => {
+  if (item.path) {
+    GLOBAL_MENU_ROUTES[item.path] = item.id;
+    GLOBAL_MENU_LABELS[item.path] = item.label || item.id;
+    GLOBAL_ROUTE_MENUS[item.id] = item.path;
+  }
+  if (item.submenus) {
+    item.submenus.forEach(sub => {
+      GLOBAL_MENU_ROUTES[sub.path] = sub.id;
+      GLOBAL_MENU_LABELS[sub.path] = sub.label || sub.id;
+      GLOBAL_ROUTE_MENUS[sub.id] = sub.path;
+      GLOBAL_MENU_PARENTS[sub.id] = item.id;
+    });
+  }
+});
+
 const markdownComponents = {
   code: MarkdownCodeBlock,
   pre: ({ children }) => <>{children}</>
@@ -1342,39 +1393,38 @@ export default function App() {
     if (typeof window !== 'undefined') {
       const preloadAssets = () => {
         const assets = [
-          // Sidebar general icons
-          '/expand-default.svg',
-          '/expand-hover.svg',
-          '/up.svg',
-          '/avatar.png',
-          // Sidebar menu icons
-          '/menu-home.svg',
-          '/menu-project.svg',
-          '/menu-data-generation.svg',
-          '/menu-appeal.svg',
-          '/menu-tenant.svg',
-          '/menu-user-management.svg',
-          '/menu-template.svg',
-          // User settings icons
-          '/user-setting-change-icon.svg',
-          '/user-setting-theme.svg',
-          '/user-setting-profile.svg',
-          '/user-setting-permission.svg',
-          '/user-setting-switch-tenant.svg',
-          '/user-setting-language.svg',
-          '/user-setting-timezone.svg',
-          '/user-setting-clear-cache.svg',
-          '/user-setting-logout.svg',
-          // AI Assistant icons
-          '/ai-icon.svg',
-          '/ai-icon-hover.svg',
-          '/ai-spark.svg',
-          '/ai-avatar.png',
-          '/ai-stop.svg',
-          '/ai-copy.svg',
-          '/ai-collapse.svg',
-          '/ai-expand.svg'
-        ];
+  ...MENU_CONFIG.map(m => m.icon),
+  '/expand-default.svg',
+  '/expand-hover.svg',
+  '/up.svg',
+  '/avatar.png',
+  '/user-setting-change-icon.svg',
+  '/user-setting-theme.svg',
+  '/user-setting-profile.svg',
+  '/user-setting-permission.svg',
+  '/user-setting-switch-tenant.svg',
+  '/user-setting-clear-cache.svg',
+  '/user-setting-language.svg',
+  '/user-setting-timezone.svg',
+  '/user-setting-logout.svg',
+  '/ai-icon-1.svg',
+  '/ai-icon-2.svg',
+  '/ai-icon-3.svg',
+  '/ai-icon-4.svg',
+  '/ai-send.svg',
+  '/ai-spark.svg',
+  '/favicon.svg',
+  '/neeko.svg',
+  '/toast-check-circle-fill.svg',
+  '/toast-x-close.svg',
+  '/toolbar-fit.svg',
+  '/toolbar-fullscreen.svg',
+  '/toolbar-zoom-in.svg',
+  '/toolbar-zoom-out.svg',
+  '/user-card-audio.svg',
+  '/user-card-msg.svg',
+  '/user-card-video.svg'
+];
         assets.forEach(src => {
           const img = new Image();
           img.src = src;
@@ -1439,33 +1489,18 @@ function Sidebar({ isExpanded, setIsExpanded }) {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const MENU_ROUTES = {
-    '/home': '首页',
-    '/project': '项目管理',
-    '/task': '任务列表',
-    '/mytask': '我的任务',
-    '/template': '模板管理',
-    '/group': '组别管理',
-    '/user': '用户列表',
-    '/tag': '标签管理',
-    '/team': '团队管理',
-    '/permission': '权限管理',
-    '/auth': '角色管理',
-    '/appeal': '申诉中心',
-    '/tenant': '租户管理',
-  };
   
-  const ROUTE_MENUS = Object.fromEntries(Object.entries(MENU_ROUTES).map(([k, v]) => [v, k]));
   
-  const activeMenu = MENU_ROUTES[location.pathname] || '首页';
+  const activeMenu = GLOBAL_MENU_ROUTES[location.pathname] || '首页';
 
   // For initial expanded menus based on route
   useEffect(() => {
-    if (['首页', '任务列表', '我的任务', '组别管理'].includes(activeMenu)) {
-      setExpandedMenus(prev => prev.includes('数据生产') ? prev : [...prev, '数据生产']);
-    } else if (['用户列表', '标签管理', '团队管理', '权限管理', '角色管理'].includes(activeMenu)) {
-      setExpandedMenus(prev => prev.includes('用户管理') ? prev : [...prev, '用户管理']);
+    
+    const parentMenu = GLOBAL_MENU_PARENTS[activeMenu];
+    if (parentMenu) {
+      setExpandedMenus(prev => prev.includes(parentMenu) ? prev : [...prev, parentMenu]);
     }
+
   }, [activeMenu]);
 
   const toggleMenu = (menuName) => {
@@ -1486,7 +1521,7 @@ function Sidebar({ isExpanded, setIsExpanded }) {
   };
 
   const handleMenuClick = (menuName) => {
-    const path = ROUTE_MENUS[menuName];
+    const path = GLOBAL_ROUTE_MENUS[menuName];
     if (path) {
       navigate(path);
     }
@@ -1610,136 +1645,61 @@ function Sidebar({ isExpanded, setIsExpanded }) {
         "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide mt-2 transition-[width,padding] duration-300 ease-in-out flex flex-col",
         isExpanded ? "px-[16px] space-y-1 w-[200px] items-stretch" : "px-[16px] items-center w-[72px]"
       )} style={{ gap: isExpanded ? '0' : '8px' }}>
-        <div onClick={() => handleMenuClick('首页')}>
-          <MenuItem 
-            icon="/menu-home.svg" 
-            label="首页" 
-            isExpanded={isExpanded} 
-            active={activeMenu === '首页'}
-            onSubmenuClick={handleMenuClick}
-          />
-        </div>
-        <div onClick={() => handleMenuClick('项目管理')}>
-          <MenuItem 
-            icon="/menu-project-management.svg" 
-            label="项目管理" 
-            isExpanded={isExpanded} 
-            active={activeMenu === '项目管理'}
-            onSubmenuClick={handleMenuClick}
-          />
-        </div>
-        
-        {/* Active Menu with Submenu (Data Generation) */}
-        <div className={cn(isExpanded ? "mb-1" : "mb-0")}>
-          <div onClick={() => toggleMenu('数据生产')}>
-            <MenuItem 
-              icon="/menu-data-generation.svg" 
-              label="数据生产" 
-              isExpanded={isExpanded} 
-              hasArrow 
-              active={!isExpanded && ['任务列表', '我的任务', '组别管理'].includes(activeMenu)} 
-              isSubmenuExpanded={expandedMenus.includes('数据生产')}
-              submenus={[
-                { label: '任务列表', active: activeMenu === '任务列表' },
-                { label: '我的任务', active: activeMenu === '我的任务' },
-                { label: '组别管理', active: activeMenu === '组别管理' }
-              ]}
-              onSubmenuClick={handleMenuClick}
-            />
-          </div>
-          
-          {/* Submenu Items */}
-          <div className={cn(
-            "space-y-1 overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-in-out origin-top",
-            isExpanded && expandedMenus.includes('数据生产') ? "mt-1 max-h-[500px] opacity-100" : "max-h-0 opacity-0 m-0"
-          )}>
-            {[
-              '任务列表',
-              '我的任务',
-              '组别管理'
-            ].map((subItem) => (
-              <div 
-                key={subItem}
-                onClick={() => handleMenuClick(subItem)}
-                className={cn(
-                  "flex items-center rounded-[8px] cursor-pointer whitespace-nowrap transition-colors",
-                  activeMenu === subItem 
-                    ? "bg-[var(--primary-bg-hover)] text-[var(--primary-color)] font-medium" 
-                    : "text-[#555B65] hover:bg-[var(--primary-bg-hover)] hover:text-[var(--primary-color)]"
-                )}
-                style={{ padding: '10px 12px 10px 40px', fontSize: '14px', lineHeight: '22px' }}
-              >
-                {subItem}
+        {MENU_CONFIG.map(item => {
+          if (!item.submenus) {
+            return (
+              <div key={item.id} onClick={() => handleMenuClick(item.id)}>
+                <MenuItem 
+                  icon={item.icon} 
+                  label={item.id} 
+                  isExpanded={isExpanded} 
+                  active={activeMenu === item.id}
+                  onSubmenuClick={handleMenuClick}
+                />
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Active Menu with Submenu (User Management) */}
-        <div className={cn(isExpanded ? "mb-1" : "mb-0")}>
-          <div onClick={() => toggleMenu('用户管理')}>
-            <MenuItem 
-              icon="/menu-user-management.svg" 
-              label="用户管理" 
-              isExpanded={isExpanded} 
-              hasArrow 
-              active={!isExpanded && ['用户列表', '标签管理', '团队管理', '权限管理', '角色管理'].includes(activeMenu)} 
-              isSubmenuExpanded={expandedMenus.includes('用户管理')}
-              submenus={[
-                { label: '用户列表', active: activeMenu === '用户列表' },
-                { label: '标签管理', active: activeMenu === '标签管理' },
-                { label: '团队管理', active: activeMenu === '团队管理' },
-                { label: '权限管理', active: activeMenu === '权限管理' },
-                { label: '角色管理', active: activeMenu === '角色管理' }
-              ]}
-              onSubmenuClick={handleMenuClick}
-            />
-          </div>
-          
-          {/* Submenu Items */}
-          <div className={cn(
-            "space-y-1 overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-in-out origin-top",
-            isExpanded && expandedMenus.includes('用户管理') ? "mt-1 max-h-[500px] opacity-100" : "max-h-0 opacity-0 m-0"
-          )}>
-            {[
-              '用户列表',
-              '标签管理',
-              '团队管理',
-              '权限管理',
-              '角色管理'
-            ].map((subItem) => (
-              <div 
-                key={subItem}
-                onClick={() => handleMenuClick(subItem)}
-                className={cn(
-                  "flex items-center rounded-[8px] cursor-pointer whitespace-nowrap transition-colors",
-                  activeMenu === subItem 
-                    ? "bg-[var(--primary-bg-hover)] text-[var(--primary-color)] font-medium" 
-                    : "text-[#555B65] hover:bg-[var(--primary-bg-hover)] hover:text-[var(--primary-color)]"
-                )}
-                style={{ padding: '10px 12px 10px 40px', fontSize: '14px', lineHeight: '22px' }}
-              >
-                {subItem}
+            );
+          } else {
+            const isAnySubActive = item.submenus.some(sub => sub.id === activeMenu);
+            return (
+              <div key={item.id} className={cn(isExpanded ? "mb-1" : "mb-0")}>
+                <div onClick={() => toggleMenu(item.id)}>
+                  <MenuItem 
+                    icon={item.icon} 
+                    label={item.id} 
+                    isExpanded={isExpanded} 
+                    hasArrow 
+                    active={!isExpanded && isAnySubActive} 
+                    isSubmenuExpanded={expandedMenus.includes(item.id)}
+                    submenus={item.submenus.map(sub => ({ id: sub.id, label: sub.label, active: activeMenu === sub.id }))}
+                    onSubmenuClick={handleMenuClick}
+                  />
+                </div>
+                
+                {/* Submenu Items */}
+                <div className={cn(
+                  "space-y-1 overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-in-out origin-top",
+                  isExpanded && expandedMenus.includes(item.id) ? "mt-1 max-h-[500px] opacity-100" : "max-h-0 opacity-0 m-0"
+                )}>
+                  {item.submenus.map((subItem) => (
+                    <div 
+                      key={subItem.id}
+                      onClick={() => handleMenuClick(subItem.id)}
+                      className={cn(
+                        "flex items-center rounded-[8px] cursor-pointer whitespace-nowrap transition-colors",
+                        activeMenu === subItem.id 
+                          ? "bg-[var(--primary-bg-hover)] text-[var(--primary-color)] font-medium" 
+                          : "text-[#555B65] hover:bg-[var(--primary-bg-hover)] hover:text-[var(--primary-color)]"
+                      )}
+                      style={{ padding: '10px 12px 10px 40px', fontSize: '14px', lineHeight: '22px' }}
+                    >
+                      {subItem.label}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div onClick={() => handleMenuClick('模板管理')}>
-          <MenuItem 
-            icon="/menu-template.svg" 
-            label="模板管理" 
-            isExpanded={isExpanded} 
-            active={activeMenu === '模板管理'}
-            onSubmenuClick={handleMenuClick}
-          />
-        </div>
-        <div onClick={() => handleMenuClick('申诉中心')}>
-          <MenuItem icon="/menu-appeal-center.svg" label="申诉中心" isExpanded={isExpanded} active={activeMenu === '申诉中心'} onSubmenuClick={handleMenuClick} />
-        </div>
-        <div onClick={() => handleMenuClick('租户管理')}>
-          <MenuItem icon="/menu-tenant-management.svg" label="租户管理" isExpanded={isExpanded} active={activeMenu === '租户管理'} onSubmenuClick={handleMenuClick} />
-        </div>
+            );
+          }
+        })}
       </div>
 
       {/* User Profile */}
@@ -2366,7 +2326,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onSubmenuClick) {
-                    onSubmenuClick(sub.label);
+                    onSubmenuClick(sub.id);
                     setIsHovered(false);
                   }
                 }}
@@ -2388,22 +2348,7 @@ function MenuItem({ icon, label, isExpanded, hasArrow, active, submenus, onSubme
 
 function MainContent() {
   const location = useLocation();
-  const MENU_ROUTES = {
-    '/home': '首页',
-    '/project': '项目管理',
-    '/task': '任务列表',
-    '/mytask': '我的任务',
-    '/template': '模板管理',
-    '/group': '组别管理',
-    '/user': '用户列表',
-    '/tag': '标签管理',
-    '/team': '团队管理',
-    '/permission': '权限管理',
-    '/auth': '角色管理',
-    '/appeal': '申诉中心',
-    '/tenant': '租户管理',
-  };
-  const activeMenuTitle = MENU_ROUTES[location.pathname] || '首页';
+  const activeMenuTitle = GLOBAL_MENU_LABELS[location.pathname] || '首页';
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
