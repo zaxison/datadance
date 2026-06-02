@@ -317,6 +317,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }) {
                 <div className="flex flex-col w-full" style={{ gap: '0px' }} onMouseLeave={() => {
                   // We handle mouse leave on individual items instead
                 }}>
+                  {/* 调试功能暂时隐藏，勿删
                   <UserSettingItem 
                     icon="/user-setting-change-icon.svg" 
                     label="更改图标 (dev)" 
@@ -327,6 +328,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }) {
                     label="主题配置 (dev)" 
                     hasArrow={true}
                   />
+                  */}
                   <UserSettingItem icon="/user-setting-profile.svg" label="个人信息" />
                   <UserSettingItem icon="/user-setting-permission.svg" label="权限申请" />
                 </div>
