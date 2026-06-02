@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { PanelLeftClose } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { MENU_CONFIG, GLOBAL_MENU_PARENTS } from '../../config/menu';
+import { MENU_CONFIG, GLOBAL_MENU_PARENTS, GLOBAL_MENU_ROUTES, GLOBAL_ROUTE_MENUS } from '../../config/menu';
 
 export default function Sidebar({ isExpanded, setIsExpanded }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
