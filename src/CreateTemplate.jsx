@@ -5,7 +5,7 @@ import { cn } from './lib/utils';
 import { UserHoverWrapper } from './UserHoverCard';
 
 const AI_RECOMMENDED_TEMPLATES = [
-  { id: 'a1', title: '音频cot', desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复', uses: 1200, tags: ['语音', '对话与交互'], image: 'https://images.unsplash.com/photo-1516280440503-6c84c4a7e914?w=500&q=80', isAi: true },
+  { id: 'a1', title: '音频cot', desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复', uses: 1200, tags: ['语音', '对话与交互'], image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80', isAi: true },
   { id: 'a2', title: '机器人操作轨迹', desc: '针对视频中机器人的操作轨迹进行标记，包括关键片段的起止时间，任务', uses: 856, tags: ['视频', '连续帧追踪'], image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&q=80', isAi: true },
   { id: 'a3', title: '同传换翻译模板', desc: '还没有相关描述哦，请预览模板', uses: 342, tags: ['文本', '转写'], image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&q=80', isAi: true },
   { id: 'a4', title: '视频抽帧图片打标', desc: '将视频分解为序列帧，在帧上添加标签，指明用户在当前帧进行的图形界', uses: 2100, tags: ['视频', '图片', '画框标注'], image: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?w=500&q=80', isAi: true },
@@ -197,6 +197,18 @@ export default function CreateTemplate() {
           </>
         ) : (
           <>
+            {/* Search */}
+            <div className="relative w-64">
+              <input
+                type="text"
+                placeholder="搜索模板名称"
+                value={mySearch}
+                onChange={(e) => setMySearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-[6px] bg-gray-50 border border-transparent rounded-md text-sm focus:bg-white focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] outline-none transition-all"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+            </div>
+
             {/* Type Filter */}
             <div className="relative">
               <button 
@@ -219,18 +231,6 @@ export default function CreateTemplate() {
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Search */}
-            <div className="relative w-64">
-              <input
-                type="text"
-                placeholder="搜索模板名称"
-                value={mySearch}
-                onChange={(e) => setMySearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-[6px] bg-gray-50 border border-transparent rounded-md text-sm focus:bg-white focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] outline-none transition-all"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             </div>
 
             {/* Sort */}
@@ -280,9 +280,23 @@ export default function CreateTemplate() {
             <TemplateCard key={tpl.id} tpl={tpl} isFavorite={favorites.has(tpl.id)} onToggleFavorite={() => toggleFavorite(tpl.id)} type="my" />
           ))}
 
-          {activeTab === '我的收藏' && [...AI_RECOMMENDED_TEMPLATES, ...MY_TEMPLATES].filter(t => favorites.has(t.id)).map(tpl => (
-            <TemplateCard key={tpl.id} tpl={tpl} isFavorite={true} onToggleFavorite={() => toggleFavorite(tpl.id)} type={tpl.isAi ? 'ai' : 'my'} />
-          ))}
+          {activeTab === '我的收藏' && (() => {
+            const favItems = [...AI_RECOMMENDED_TEMPLATES, ...MY_TEMPLATES].filter(t => favorites.has(t.id));
+            if (favItems.length === 0) {
+              return (
+                <div className="col-span-full flex flex-col items-center justify-center py-24 text-gray-400">
+                  <div className="w-20 h-20 mb-4 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100">
+                    <Star className="w-8 h-8 text-gray-300" />
+                  </div>
+                  <p className="text-[15px] font-medium text-gray-500">暂无收藏的模板</p>
+                  <p className="text-[13px] mt-1 text-gray-400">去“AI 推荐”或“我的模板”中收藏几个吧</p>
+                </div>
+              );
+            }
+            return favItems.map(tpl => (
+              <TemplateCard key={tpl.id} tpl={tpl} isFavorite={true} onToggleFavorite={() => toggleFavorite(tpl.id)} type={tpl.isAi ? 'ai' : 'my'} />
+            ));
+          })()}
         </div>
       </div>
     </div>
