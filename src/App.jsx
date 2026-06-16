@@ -1336,6 +1336,8 @@ function CreateProjectModal({ isOpen, onClose, onSuccess }) {
 }
 
 // Main App component
+import CreateTemplate from './CreateTemplate';
+
 export default function App() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
@@ -1399,6 +1401,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/template/create" element={<CreateTemplate />} />
             <Route path="/mytask" element={<MyTask />} />
             <Route path="*" element={<MainContent />} />
           </Routes>
@@ -1416,6 +1419,7 @@ export default function App() {
 
 function MainContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const activeMenuTitle = GLOBAL_MENU_LABELS[location.pathname] || '首页';
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -1423,6 +1427,14 @@ function MainContent() {
   const [currentView, setCurrentView] = useState('list');
   const [selectedTask, setSelectedTask] = useState(null);
   const [activeTab, setActiveTab] = useState('全部任务');
+
+  const handleCreateClick = () => {
+    if (location.pathname === '/template') {
+      navigate('/template/create');
+    } else {
+      setIsCreateModalOpen(true);
+    }
+  };
 
   const handleCreateSuccess = () => {
     setIsCreateModalOpen(false);
@@ -1464,7 +1476,11 @@ function MainContent() {
     <div className="flex-1 flex flex-col min-w-0 bg-white m-0 pt-[20px] pr-[20px] pl-[20px] pb-0 h-full relative">
       {currentView === 'list' ? (
         <div className="flex-1 flex flex-col gap-[16px] overflow-hidden">
-          <TitleArea onCreateClick={() => setIsCreateModalOpen(true)} title={activeMenuTitle} />
+          <TitleArea 
+            onCreateClick={handleCreateClick} 
+            title={activeMenuTitle} 
+            buttonText={location.pathname === '/template' ? '创建模板' : '创建任务'} 
+          />
           <TabArea activeTab={activeTab} setActiveTab={setActiveTab} />
           <FilterArea />
           <TableArea onTaskClick={handleTaskClick} activeTab={activeTab} />
@@ -1531,27 +1547,27 @@ function Toast({ type, text, highlightText, onClose, onHighlightClick }) {
   );
 }
 
-function TitleArea({ onCreateClick, title = "任务管理" }) {
+function TitleArea({ onCreateClick, title = "任务管理", buttonText = "创建任务" }) {
   return (
     <div className="flex flex-col flex-shrink-0">
       <div className="flex justify-between items-center w-full">
-        <h1 
-          className="font-medium" 
-          style={{ 
-            color: '#020814', 
-            fontFamily: '"PingFang SC", sans-serif', 
-            fontSize: '16px', 
-            fontWeight: 500, 
-            lineHeight: '24px', 
-            letterSpacing: '0.048px' 
+        <h1
+          className="font-medium"
+          style={{
+            color: '#020814',
+            fontFamily: '"PingFang SC", sans-serif',
+            fontSize: '16px',
+            fontWeight: 500,
+            lineHeight: '24px',
+            letterSpacing: '0.048px'
           }}
         >
           {title}
         </h1>
-        <button 
+        <button
           onClick={onCreateClick}
           className="flex items-center justify-center text-white transition-colors cursor-pointer group relative overflow-hidden"
-          style={{ 
+          style={{
             background: 'var(--primary-color)',
             padding: '5px 16px',
             gap: '8px',
@@ -1559,8 +1575,8 @@ function TitleArea({ onCreateClick, title = "任务管理" }) {
           }}
         >
           <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-          <span className="text-lg leading-none relative -top-[1px] z-10">+</span> 
-          <span className="z-10 relative" style={{ fontSize: '13px', lineHeight: '22px' }}>创建任务</span>
+          <span className="text-lg leading-none relative -top-[1px] z-10">+</span>
+          <span className="z-10 relative" style={{ fontSize: '13px', lineHeight: '22px' }}>{buttonText}</span>
         </button>
       </div>
       <p 
