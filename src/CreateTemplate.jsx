@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronDown, Check, Plus, Star } from 'lucide-react';
+import { Search, ChevronDown, Check, Plus, Star, Copy } from 'lucide-react';
 import { cn } from './lib/utils';
 import { UserHoverWrapper } from './UserHoverCard';
 
@@ -40,6 +40,26 @@ export default function CreateTemplate() {
   const [mySearch, setMySearch] = useState('');
   const [mySort, setMySort] = useState('时间由近到远');
   const [isMySortOpen, setIsMySortOpen] = useState(false);
+  
+  const [showToast, setShowToast] = useState(false);
+  const [previewTpl, setPreviewTpl] = useState(null);
+
+  // Click outside handlers
+  const aiSortRef = useRef(null);
+  const tagFilterRef = useRef(null);
+  const myTypeRef = useRef(null);
+  const mySortRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (aiSortRef.current && !aiSortRef.current.contains(event.target)) setIsAiSortOpen(false);
+      if (tagFilterRef.current && !tagFilterRef.current.contains(event.target)) setIsTagFilterOpen(false);
+      if (myTypeRef.current && !myTypeRef.current.contains(event.target)) setIsMyTypeOpen(false);
+      if (mySortRef.current && !mySortRef.current.contains(event.target)) setIsMySortOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleFavorite = (id) => {
     setFavorites(prev => {
@@ -122,7 +142,7 @@ export default function CreateTemplate() {
             </div>
 
             {/* Sort */}
-            <div className="relative">
+            <div className="relative" ref={aiSortRef}>
               <button 
                 onClick={() => setIsAiSortOpen(!isAiSortOpen)}
                 className="flex items-center justify-between px-3 py-[6px] border border-gray-200 rounded-md text-sm bg-white hover:bg-gray-50 min-w-[120px]"
@@ -131,7 +151,7 @@ export default function CreateTemplate() {
                 <ChevronDown className="w-4 h-4 text-gray-400 ml-2" />
               </button>
               {isAiSortOpen && (
-                <div className="absolute top-full mt-1 right-0 w-full bg-white border border-gray-100 rounded-md shadow-lg z-20 py-1">
+                <div className="absolute top-full mt-1 right-0 w-full bg-white border border-gray-100 rounded-md shadow-lg z-50 py-1">
                   {['按热度排序', '按更新时间排序'].map(opt => (
                     <div 
                       key={opt} 
@@ -146,7 +166,7 @@ export default function CreateTemplate() {
             </div>
 
             {/* Tags */}
-            <div className="relative">
+            <div className="relative" ref={tagFilterRef}>
               <button 
                 onClick={() => setIsTagFilterOpen(!isTagFilterOpen)}
                 className="flex items-center justify-between px-3 py-[6px] border border-gray-200 rounded-md text-sm bg-white hover:bg-gray-50"
@@ -155,7 +175,7 @@ export default function CreateTemplate() {
                 <ChevronDown className="w-4 h-4 text-gray-400 ml-2" />
               </button>
               {isTagFilterOpen && (
-                <div className="absolute top-full mt-1 right-0 w-[400px] bg-white border border-gray-100 rounded-md shadow-lg z-20 p-4">
+                <div className="absolute top-full mt-1 right-0 w-[400px] bg-white border border-gray-100 rounded-md shadow-lg z-50 p-4">
                   {Object.entries(TAG_CATEGORIES).map(([cat, tags]) => (
                     <div key={cat} className="mb-4 last:mb-0">
                       <div className="text-xs text-gray-400 mb-2">{cat}</div>
@@ -210,7 +230,7 @@ export default function CreateTemplate() {
             </div>
 
             {/* Type Filter */}
-            <div className="relative">
+            <div className="relative" ref={myTypeRef}>
               <button 
                 onClick={() => setIsMyTypeOpen(!isMyTypeOpen)}
                 className="flex items-center justify-between px-3 py-[6px] border border-gray-200 rounded-md text-sm bg-white hover:bg-gray-50 min-w-[120px]"
@@ -219,7 +239,7 @@ export default function CreateTemplate() {
                 <ChevronDown className="w-4 h-4 text-gray-400 ml-2" />
               </button>
               {isMyTypeOpen && (
-                <div className="absolute top-full mt-1 right-0 w-full bg-white border border-gray-100 rounded-md shadow-lg z-20 py-1">
+                <div className="absolute top-full mt-1 right-0 w-full bg-white border border-gray-100 rounded-md shadow-lg z-50 py-1">
                   {['全部', 'Neeko', 'Vibecoding'].map(opt => (
                     <div 
                       key={opt} 
@@ -234,7 +254,7 @@ export default function CreateTemplate() {
             </div>
 
             {/* Sort */}
-            <div className="relative">
+            <div className="relative" ref={mySortRef}>
               <button 
                 onClick={() => setIsMySortOpen(!isMySortOpen)}
                 className="flex items-center justify-between px-3 py-[6px] border border-gray-200 rounded-md text-sm bg-white hover:bg-gray-50 min-w-[140px]"
@@ -243,7 +263,7 @@ export default function CreateTemplate() {
                 <ChevronDown className="w-4 h-4 text-gray-400 ml-2" />
               </button>
               {isMySortOpen && (
-                <div className="absolute top-full mt-1 right-0 w-full bg-white border border-gray-100 rounded-md shadow-lg z-20 py-1">
+                <div className="absolute top-full mt-1 right-0 w-full bg-white border border-gray-100 rounded-md shadow-lg z-50 py-1">
                   {['时间由近到远', '时间由远到近'].map(opt => (
                     <div 
                       key={opt} 
@@ -262,6 +282,19 @@ export default function CreateTemplate() {
 
       {/* Cards Area */}
       <div className="flex-1 overflow-y-auto pr-2 pb-10">
+        {/* Local Toast for Copy ID */}
+        {showToast && (
+          <div className="fixed top-[20px] left-1/2 -translate-x-1/2 z-[999999] transition-all duration-300 animate-in fade-in slide-in-from-top-4">
+            <div className="inline-flex items-center gap-2 px-3 py-2 bg-white rounded-md border border-[#E2E5F1] shadow-[0_4px_16px_rgb(0,0,0,0.08)]">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="8" fill="#1CC468" />
+                <path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="text-[14px] text-[#020814] font-medium leading-[22px]">已复制模板ID</span>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-4 2xl:grid-cols-5 gap-5">
           {activeTab === 'AI 推荐' && (
             <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 hover:bg-gray-50 flex flex-col items-center justify-center cursor-pointer min-h-[280px] transition-colors group">
@@ -273,11 +306,14 @@ export default function CreateTemplate() {
           )}
 
           {activeTab === 'AI 推荐' && AI_RECOMMENDED_TEMPLATES.map(tpl => (
-            <TemplateCard key={tpl.id} tpl={tpl} isFavorite={favorites.has(tpl.id)} onToggleFavorite={() => toggleFavorite(tpl.id)} type="ai" />
+            <TemplateCard key={tpl.id} tpl={tpl} isFavorite={favorites.has(tpl.id)} onToggleFavorite={() => toggleFavorite(tpl.id)} type="ai" onPreview={setPreviewTpl} />
           ))}
 
           {activeTab === '我的模板' && MY_TEMPLATES.map(tpl => (
-            <TemplateCard key={tpl.id} tpl={tpl} isFavorite={favorites.has(tpl.id)} onToggleFavorite={() => toggleFavorite(tpl.id)} type="my" />
+            <TemplateCard key={tpl.id} tpl={tpl} isFavorite={favorites.has(tpl.id)} onToggleFavorite={() => toggleFavorite(tpl.id)} type="my" onPreview={setPreviewTpl} onCopyId={() => {
+              setShowToast(true);
+              setTimeout(() => setShowToast(false), 3000);
+            }} />
           ))}
 
           {activeTab === '我的收藏' && (() => {
@@ -294,11 +330,63 @@ export default function CreateTemplate() {
               );
             }
             return favItems.map(tpl => (
-              <TemplateCard key={tpl.id} tpl={tpl} isFavorite={true} onToggleFavorite={() => toggleFavorite(tpl.id)} type={tpl.isAi ? 'ai' : 'my'} />
+              <TemplateCard key={tpl.id} tpl={tpl} isFavorite={true} onToggleFavorite={() => toggleFavorite(tpl.id)} type={tpl.isAi ? 'ai' : 'my'} onPreview={setPreviewTpl} onCopyId={() => {
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 3000);
+              }} />
             ));
           })()}
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {previewTpl && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all duration-300 animate-in fade-in">
+          <div className="bg-white rounded-xl shadow-2xl w-[800px] max-w-[90vw] max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+              <h2 className="text-lg font-medium text-gray-900">{previewTpl.title}</h2>
+              <button 
+                onClick={() => setPreviewTpl(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
+              <div className="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <img src={previewTpl.image} alt={previewTpl.title} className="w-full h-auto object-contain max-h-[60vh] bg-gray-100" />
+              </div>
+              <div className="mt-4">
+                <p className="text-[14px] text-gray-600 leading-relaxed">{previewTpl.desc}</p>
+              </div>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end space-x-3 flex-shrink-0 bg-white">
+              <button 
+                onClick={() => setPreviewTpl(null)}
+                className="px-5 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+              <button 
+                onClick={() => {
+                  setPreviewTpl(null);
+                  // handle use template logic here
+                }}
+                className="px-5 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-md hover:opacity-90 transition-opacity"
+              >
+                使用此模板
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -325,7 +413,7 @@ function StepItem({ num, label, state }) {
   );
 }
 
-function TemplateCard({ tpl, isFavorite, onToggleFavorite, type }) {
+function TemplateCard({ tpl, isFavorite, onToggleFavorite, type, onCopyId, onPreview }) {
   return (
     <div className="rounded-xl border border-gray-100 bg-white overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 group flex flex-col h-[280px]">
       {/* Image Area */}
@@ -334,7 +422,10 @@ function TemplateCard({ tpl, isFavorite, onToggleFavorite, type }) {
         
         {/* Overlay with buttons */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3 z-10">
-          <button className="px-4 py-1.5 bg-white text-gray-800 text-sm font-medium rounded-md hover:bg-gray-50">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onPreview && onPreview(tpl); }}
+            className="px-4 py-1.5 bg-white text-gray-800 text-sm font-medium rounded-md hover:bg-gray-50"
+          >
             预览
           </button>
           <button className="px-4 py-1.5 bg-[var(--primary-color)] text-white text-sm font-medium rounded-md hover:opacity-90">
@@ -362,10 +453,21 @@ function TemplateCard({ tpl, isFavorite, onToggleFavorite, type }) {
       </div>
 
       {/* Content Area */}
-      <div className="p-4 flex-1 flex flex-col min-h-0">
-        <div className="flex items-center justify-between mb-1">
+      <div className="p-4 flex-1 flex flex-col min-h-0 relative">
+        <div className="flex items-center justify-between mb-1 group/title">
           <h3 className="font-medium text-[15px] text-gray-900 truncate pr-2">{tpl.title}</h3>
-          {type === 'my' && <span className="text-xs text-gray-400 flex-shrink-0">{tpl.templateId}</span>}
+          {type === 'my' && (
+            <div className="flex items-center opacity-0 group-hover/title:opacity-100 transition-opacity flex-shrink-0">
+              <span className="text-xs text-gray-400 mr-1.5">{tpl.templateId}</span>
+              <button 
+                onClick={(e) => { e.stopPropagation(); onCopyId && onCopyId(tpl.templateId); }}
+                className="text-gray-400 hover:text-[var(--primary-color)] p-1 rounded transition-colors"
+                title="复制ID"
+              >
+                <Copy className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
         
         <p className="text-[13px] text-gray-500 line-clamp-2 leading-relaxed flex-1">
