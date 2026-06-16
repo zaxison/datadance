@@ -8,7 +8,7 @@ const AI_RECOMMENDED_TEMPLATES = [
   { id: 'a1', title: '音频cot', desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复', uses: 1200, tags: ['语音', '对话与交互'], image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80', isAi: true },
   { id: 'a2', title: '机器人操作轨迹', desc: '针对视频中机器人的操作轨迹进行标记，包括关键片段的起止时间，任务', uses: 856, tags: ['视频', '连续帧追踪'], image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&q=80', isAi: true },
   { id: 'a3', title: '同传换翻译模板', desc: '还没有相关描述哦，请预览模板', uses: 342, tags: ['文本', '转写'], image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&q=80', isAi: true },
-  { id: 'a4', title: '视频抽帧图片打标', desc: '将视频分解为序列帧，在帧上添加标签，指明用户在当前帧进行的图形界', uses: 2100, tags: ['视频', '图片', '画框标注'], image: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?w=500&q=80', isAi: true },
+  { id: 'a4', title: '视频抽帧图片打标', desc: '将视频分解为序列帧，在帧上添加标签，指明用户在当前帧进行的图形界', uses: 2100, tags: ['视频', '图片', '画框标注'], image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=500&q=80', isAi: true },
   { id: 'a5', title: '3D数据评分', desc: '针对 3d 资产在几何、复杂度、结构、贴图等维度进行打分，筛选出高质量', uses: 150, tags: ['3D', '评估'], image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=500&q=80', isAi: true },
 ];
 
