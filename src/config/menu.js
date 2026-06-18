@@ -26,6 +26,7 @@ export const MENU_CONFIG = [
     { id: '用户管理-团队管理', label: '团队管理', path: '/user-team' },
   ]},
   { id: '租户管理', icon: '/menu-tenant-management.svg', path: '/tenant' },
+  { id: '交互演示', icon: '/menu-interaction-demo.svg', path: '/demo' },
 ];
 
 export const GLOBAL_MENU_ROUTES = {};
