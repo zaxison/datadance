@@ -1401,6 +1401,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/demo/1" element={<CreateTemplate />} />
             <Route path="/template/create" element={<CreateTemplate />} />
             <Route path="/mytask" element={<MyTask />} />
             <Route path="*" element={<MainContent />} />
