@@ -178,22 +178,27 @@ export default function CreateTemplate() {
     <div className="flex h-full min-h-0 flex-1 flex-col bg-white text-[#1D2129]">
       <TemplateHeader onBack={() => navigate('/template')} />
 
-      <div className="flex h-[32px] shrink-0 items-end border-b border-[#E5E6EB] px-[20px]">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={cn(
-              'relative mr-[6px] h-[32px] min-w-[76px] rounded-t-[4px] border border-b-0 px-[16px] text-[14px] leading-[22px] transition-colors',
-              activeTab === tab
-                ? 'border-[#EAEDF1] bg-white font-medium text-[#006EFF] shadow-[inset_0_2px_0_#006EFF] after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[1px] after:bg-white after:content-[""]'
-                : 'border-[#E5E6EB] bg-[#F7F8FA] text-[#4E5969] hover:text-[#1D2129]'
-            )}
-          >
-            {tab}
-          </button>
-        ))}
+      <div className="relative flex h-[32px] shrink-0 items-end border-b border-[#E5E6EB] px-[20px]">
+        <div className="flex items-end">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                'relative mr-[6px] h-[32px] min-w-[76px] rounded-t-[4px] border border-b-0 px-[16px] text-[14px] leading-[22px] transition-colors',
+                activeTab === tab
+                  ? 'border-[#EAEDF1] bg-white font-medium text-[#006EFF] shadow-[inset_0_2px_0_#006EFF] after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[1px] after:bg-white after:content-[""]'
+                  : 'border-[#E5E6EB] bg-[#F7F8FA] text-[#4E5969] hover:text-[#1D2129]'
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <button type="button" className="absolute right-[20px] top-1/2 h-[32px] -translate-y-1/2 rounded-[4px] border border-[#DDE2EA] bg-[#F7F9FC] px-[16px] text-[14px] leading-[22px] text-[#1D2129] hover:bg-[#F2F3F5]">
+          切换到旧版本
+        </button>
       </div>
 
       <div className="flex h-[72px] shrink-0 items-center justify-between px-[20px]">
@@ -299,9 +304,6 @@ function TemplateHeader({ onBack }) {
         <StepItem state="todo" label="作业流程" index="3" />
       </div>
 
-      <button type="button" className="h-[32px] rounded-[4px] border border-[#DDE2EA] bg-[#F7F9FC] px-[16px] text-[14px] leading-[22px] text-[#1D2129] hover:bg-[#F2F3F5]">
-        切换到旧版本
-      </button>
     </div>
   );
 }
