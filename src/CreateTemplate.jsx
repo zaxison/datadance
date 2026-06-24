@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, ChevronDown, Flame, Plus, Search, Star, X } from 'lucide-react';
 import { cn } from './lib/utils';
-import { UserHoverWrapper } from './UserHoverCard';
 
 const TABS = ['AI 推荐', '我的模板', '我的收藏'];
 
@@ -56,8 +55,12 @@ const MY_TEMPLATES = [
     desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复，该标注模板主要用于验证',
     templateId: '7652323801179197199',
     type: 'Neeko',
-    creator: { name: 'zhouhongxiangzhouhongxiangzhouhongxiang', avatar: '/avatar.png' },
-    updatedAt: '2026.05.30',
+    creators: [
+      { name: 'zhouhongxiang', avatar: '/avatar.png' },
+      { name: 'fangxiaotong', avatar: '/cat2.jpg' },
+      { name: 'cuiyonglei', avatar: '/cat3.jpg' },
+    ],
+    updatedAt: '2026.05.30 18:24',
   },
   {
     id: 'my-basic-text',
@@ -65,8 +68,8 @@ const MY_TEMPLATES = [
     desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复',
     templateId: '7652323801179197102',
     type: 'Neeko',
-    creator: { name: 'zhouhongxiang', avatar: '/avatar.png' },
-    updatedAt: '2026.05.30',
+    creators: [{ name: 'zhouhongxiang', avatar: '/avatar.png' }],
+    updatedAt: '2026.05.30 18:00',
   },
   {
     id: 'my-quality-check',
@@ -74,8 +77,11 @@ const MY_TEMPLATES = [
     desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复',
     templateId: '7652323801179197116',
     type: 'Vibe Coding',
-    creator: { name: 'zhouhongxiangzhouhongxiang', avatar: '/avatar.png' },
-    updatedAt: '2026.05.29',
+    creators: [
+      { name: 'zhouhongxiang', avatar: '/avatar.png' },
+      { name: 'liuyuming', avatar: '/cat4.jpg' },
+    ],
+    updatedAt: '2026.05.29 11:36',
   },
   {
     id: 'my-visual-task',
@@ -83,8 +89,8 @@ const MY_TEMPLATES = [
     desc: '语音对话场景中，分析用户和bot的对话音频，针对模型输出的cot和回复',
     templateId: '7652323801179197120',
     type: 'Neeko',
-    creator: { name: 'zhouhongxiang', avatar: '/avatar.png' },
-    updatedAt: '2026.05.28',
+    creators: [{ name: 'zhouhongxiang', avatar: '/avatar.png' }],
+    updatedAt: '2026.05.28 09:12',
   },
 ];
 
@@ -108,10 +114,10 @@ export default function CreateTemplate() {
   const [previewTpl, setPreviewTpl] = useState(null);
 
   const [aiSearch, setAiSearch] = useState('');
-  const [aiSort, setAiSort] = useState('按热度排序');
+  const [aiSort, setAiSort] = useState('默认排序');
   const [selectedTags, setSelectedTags] = useState(() => new Set());
   const [mySearch, setMySearch] = useState('');
-  const [mySort, setMySort] = useState('按时间排序');
+  const [mySort, setMySort] = useState('时间倒序');
   const [myType, setMyType] = useState('全部类型');
 
   const showToast = (message) => {
@@ -158,7 +164,11 @@ export default function CreateTemplate() {
     return AI_TEMPLATES
       .filter((item) => !keyword || item.title.toLowerCase().includes(keyword) || item.desc.toLowerCase().includes(keyword))
       .filter((item) => selected.length === 0 || selected.some((tag) => item.tags.includes(tag)))
-      .sort((a, b) => (aiSort === '按热度排序' ? b.hot - a.hot : b.updatedAt.localeCompare(a.updatedAt)));
+      .sort((a, b) => {
+        if (aiSort === '按热度排序') return b.hot - a.hot;
+        if (aiSort === '按更新时间排序') return b.updatedAt.localeCompare(a.updatedAt);
+        return 0;
+      });
   }, [aiSearch, aiSort, selectedTags]);
 
   const myItems = useMemo(() => {
@@ -166,7 +176,7 @@ export default function CreateTemplate() {
     const source = MY_TEMPLATES
       .filter((item) => myType === '全部类型' || item.type === myType)
       .filter((item) => !keyword || item.title.toLowerCase().includes(keyword) || item.desc.toLowerCase().includes(keyword) || item.templateId.includes(keyword));
-    return [...source].sort((a, b) => (mySort === '按时间排序' ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt)));
+    return [...source].sort((a, b) => (mySort === '时间倒序' ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt)));
   }, [mySearch, mySort, myType]);
 
   const favoriteItems = useMemo(() => {
@@ -209,12 +219,12 @@ export default function CreateTemplate() {
         <div className="flex items-center gap-[14px]">
           {activeTab === 'AI 推荐' ? (
             <>
-              <SelectMenu value={aiSort} options={['按热度排序', '按更新时间排序']} onChange={setAiSort} width={146} />
+              <SelectMenu value={aiSort} options={['默认排序', '按热度排序', '按更新时间排序']} onChange={setAiSort} width={146} />
               <TagFilter selectedTags={selectedTags} onChange={setSelectedTags} />
             </>
           ) : (
             <>
-              <SelectMenu value={mySort} options={['按时间排序', '按时间倒序排序']} onChange={setMySort} width={146} />
+              <SelectMenu value={mySort} options={['时间倒序', '时间正序']} onChange={setMySort} width={146} />
               {activeTab === '我的模板' && (
                 <SelectMenu value={myType} options={['全部类型', 'Neeko', 'Vibe Coding']} onChange={setMyType} width={122} />
               )}
@@ -565,19 +575,37 @@ function TemplateCard({ tpl, variant, isFavorite, onFavorite, onPreview, onCopyI
             </>
           ) : (
             <>
-              <div className="flex min-w-0 items-center gap-[6px]">
-                <img src={tpl.creator.avatar} alt="" className="h-[18px] w-[18px] shrink-0 rounded-full object-cover" />
-                <UserHoverWrapper
-                  name={tpl.creator.name}
-                  avatar={tpl.creator.avatar}
-                  trigger={<span className="block max-w-[190px] truncate text-[13px] leading-[20px] text-[#6B778A] hover:text-[#0D6EFD]">{tpl.creator.name}</span>}
-                />
-              </div>
+              <TemplateCreators creators={tpl.creators} />
               <span className="shrink-0 text-[13px] leading-[20px] text-[#86909C]">{tpl.updatedAt}</span>
             </>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function TemplateCreators({ creators = [] }) {
+  const [firstCreator, ...otherCreators] = creators;
+  if (!firstCreator) return null;
+
+  return (
+    <div className="flex min-w-0 items-center">
+      <img src={firstCreator.avatar} alt="" className="h-[18px] w-[18px] shrink-0 rounded-full object-cover" />
+      <span className="ml-[6px] block max-w-[116px] truncate text-[12px] leading-[18px] text-[#6B778A]" title={firstCreator.name}>
+        {firstCreator.name}
+      </span>
+      {otherCreators.length > 0 && (
+        <div className="group/more relative ml-[8px] shrink-0">
+          <span className="block h-[20px] rounded-[10px] border border-[#EAEDF1] bg-[#F6F8FA] px-[8px] text-[10px] font-medium leading-[18px] text-[#4E5969]">
+            +{otherCreators.length}
+          </span>
+          <div className="pointer-events-none absolute bottom-[28px] left-1/2 z-40 hidden -translate-x-1/2 whitespace-nowrap rounded-[8px] border border-[#DDE2EA] bg-white px-[18px] py-[12px] text-[13px] leading-[20px] text-[#6B778A] shadow-[0_12px_32px_rgba(29,33,41,0.14)] group-hover/more:block">
+            {otherCreators.map((creator) => creator.name).join('、')}
+            <div className="absolute bottom-[-7px] left-1/2 h-[14px] w-[14px] -translate-x-1/2 rotate-45 border-b border-r border-[#DDE2EA] bg-white" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
