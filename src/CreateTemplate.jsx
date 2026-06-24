@@ -196,7 +196,7 @@ export default function CreateTemplate() {
             </button>
           ))}
         </div>
-        <button type="button" className="absolute right-[20px] top-1/2 h-[32px] -translate-y-1/2 rounded-[4px] border border-[#DDE2EA] bg-[#F7F9FC] px-[16px] text-[14px] leading-[22px] text-[#1D2129] hover:bg-[#F2F3F5]">
+        <button type="button" className="absolute right-[20px] top-0 h-[28px] rounded-[4px] border border-[#DDE2EA] bg-[#F7F9FC] px-[16px] text-[14px] leading-[22px] text-[#1D2129] hover:bg-[#F2F3F5]">
           切换到旧版本
         </button>
       </div>
