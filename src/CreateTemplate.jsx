@@ -521,7 +521,10 @@ function TemplateCard({ tpl, variant, isFavorite, onFavorite, onPreview, onCopyI
             event.stopPropagation();
             onFavorite();
           }}
-          className={cn('absolute right-[12px] top-[10px] z-30 flex h-[24px] w-[24px] items-center justify-center rounded-[4px]', isFavorite ? 'text-[#FFC046]' : 'text-white hover:text-[#FFC046]')}
+          className={cn(
+            'absolute right-[12px] top-[10px] z-30 flex h-[24px] w-[24px] items-center justify-center rounded-[4px] transition-opacity',
+            isFavorite ? 'opacity-100 text-[#FFC046]' : 'opacity-0 text-white hover:text-[#FFC046] group-hover:opacity-100'
+          )}
           aria-label={isFavorite ? '取消收藏' : '收藏'}
         >
           <Star size={20} fill={isFavorite ? 'currentColor' : 'none'} strokeWidth={2} />
