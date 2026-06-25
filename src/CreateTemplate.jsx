@@ -206,9 +206,6 @@ export default function CreateTemplate() {
             </button>
           ))}
         </div>
-        <button type="button" className="absolute right-[20px] top-0 h-[22px] p-0 text-[14px] leading-[22px] text-[#1664FF] hover:text-[#387BFF]">
-          切换到旧版本
-        </button>
       </div>
 
       <div className="flex h-[72px] shrink-0 items-center justify-between px-[20px]">
@@ -314,6 +311,9 @@ function TemplateHeader({ onBack }) {
         <StepItem state="todo" label="作业流程" index="3" />
       </div>
 
+      <button type="button" className="h-[32px] rounded-[4px] border border-[#DDE2EA] bg-[#F7F9FC] px-[16px] text-[14px] leading-[22px] text-[#1D2129] hover:bg-[#F2F3F5]">
+        切换到旧版本
+      </button>
     </div>
   );
 }
