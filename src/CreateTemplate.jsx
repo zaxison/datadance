@@ -4,6 +4,7 @@ import { Check, ChevronDown, Flame, Plus, Search, Star, X } from 'lucide-react';
 import { cn } from './lib/utils';
 
 const TABS = ['AI 推荐', '我的模板', '我的收藏'];
+const HOVER_SELECT_ICON_OPACITY = 60;
 
 const AI_TEMPLATES = [
   {
@@ -111,7 +112,6 @@ export default function CreateTemplate() {
   const [activeTab, setActiveTab] = useState('AI 推荐');
   const [favorites, setFavorites] = useState(() => new Set());
   const [selectedMyTemplateId, setSelectedMyTemplateId] = useState(null);
-  const [hoverSelectIconOpacity, setHoverSelectIconOpacity] = useState(60);
   const [toast, setToast] = useState('');
   const [previewTpl, setPreviewTpl] = useState(null);
 
@@ -260,7 +260,6 @@ export default function CreateTemplate() {
                 variant="my"
                 isFavorite={favorites.has(tpl.id)}
                 isSelected={selectedMyTemplateId === tpl.id}
-                hoverSelectIconOpacity={hoverSelectIconOpacity}
                 onFavorite={() => toggleFavorite(tpl.id)}
                 onPreview={() => setPreviewTpl(tpl)}
                 onCopyId={() => copyTemplateId(tpl.templateId)}
@@ -290,15 +289,6 @@ export default function CreateTemplate() {
           )
         )}
       </div>
-
-      <button
-        type="button"
-        onClick={() => setHoverSelectIconOpacity((value) => (value >= 100 ? 10 : value + 10))}
-        className="fixed bottom-[20px] right-[20px] z-[9999] rounded-[4px] border border-[#DDE2EA] bg-white px-[12px] py-[7px] text-[12px] leading-[18px] text-[#4E5969] shadow-[0_8px_24px_rgba(29,33,41,0.12)] hover:border-[#1664FF] hover:text-[#1664FF]"
-        title="点击循环调整未选中卡片 hover 时左上角选中 icon 的透明度"
-      >
-        调试透明度：{hoverSelectIconOpacity}%
-      </button>
 
       {previewTpl && <PreviewModal template={previewTpl} onClose={() => setPreviewTpl(null)} />}
     </div>
@@ -523,7 +513,7 @@ function BlankTemplateCard() {
   );
 }
 
-function TemplateCard({ tpl, variant, isFavorite, isSelected = false, hoverSelectIconOpacity = 50, onFavorite, onPreview, onCopyId, onSelect }) {
+function TemplateCard({ tpl, variant, isFavorite, isSelected = false, onFavorite, onPreview, onCopyId, onSelect }) {
   const isAi = variant === 'ai';
   const isSelectable = Boolean(onSelect);
 
@@ -546,7 +536,7 @@ function TemplateCard({ tpl, variant, isFavorite, isSelected = false, hoverSelec
             src="/template-selected.svg"
             alt=""
             className="absolute left-0 top-0 z-30 hidden h-[24px] w-[24px] group-hover:block"
-            style={{ opacity: hoverSelectIconOpacity / 100 }}
+            style={{ opacity: HOVER_SELECT_ICON_OPACITY / 100 }}
           />
         )}
 
