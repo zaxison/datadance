@@ -496,7 +496,7 @@ function TagFilter({ selectedTags, onChange }) {
 }
 
 function CardGrid({ children }) {
-  return <div className="grid grid-cols-[repeat(auto-fill,minmax(292px,1fr))] gap-x-[18px] gap-y-[20px]">{children}</div>;
+  return <div className="grid grid-cols-[repeat(auto-fill,minmax(292px,1fr))] gap-x-[20px] gap-y-[20px]">{children}</div>;
 }
 
 function BlankTemplateCard() {
