@@ -110,6 +110,8 @@ export default function CreateTemplate() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('AI 推荐');
   const [favorites, setFavorites] = useState(() => new Set());
+  const [selectedMyTemplateId, setSelectedMyTemplateId] = useState(null);
+  const [hoverSelectIconOpacity, setHoverSelectIconOpacity] = useState(60);
   const [toast, setToast] = useState('');
   const [previewTpl, setPreviewTpl] = useState(null);
 
@@ -257,9 +259,12 @@ export default function CreateTemplate() {
                 tpl={tpl}
                 variant="my"
                 isFavorite={favorites.has(tpl.id)}
+                isSelected={selectedMyTemplateId === tpl.id}
+                hoverSelectIconOpacity={hoverSelectIconOpacity}
                 onFavorite={() => toggleFavorite(tpl.id)}
                 onPreview={() => setPreviewTpl(tpl)}
                 onCopyId={() => copyTemplateId(tpl.templateId)}
+                onSelect={() => setSelectedMyTemplateId((current) => (current === tpl.id ? null : tpl.id))}
               />
             ))}
           </CardGrid>
@@ -285,6 +290,15 @@ export default function CreateTemplate() {
           )
         )}
       </div>
+
+      <button
+        type="button"
+        onClick={() => setHoverSelectIconOpacity((value) => (value >= 100 ? 10 : value + 10))}
+        className="fixed bottom-[20px] right-[20px] z-[9999] rounded-[4px] border border-[#DDE2EA] bg-white px-[12px] py-[7px] text-[12px] leading-[18px] text-[#4E5969] shadow-[0_8px_24px_rgba(29,33,41,0.12)] hover:border-[#1664FF] hover:text-[#1664FF]"
+        title="点击循环调整未选中卡片 hover 时左上角选中 icon 的透明度"
+      >
+        调试透明度：{hoverSelectIconOpacity}%
+      </button>
 
       {previewTpl && <PreviewModal template={previewTpl} onClose={() => setPreviewTpl(null)} />}
     </div>
@@ -509,20 +523,50 @@ function BlankTemplateCard() {
   );
 }
 
-function TemplateCard({ tpl, variant, isFavorite, onFavorite, onPreview, onCopyId }) {
+function TemplateCard({ tpl, variant, isFavorite, isSelected = false, hoverSelectIconOpacity = 50, onFavorite, onPreview, onCopyId, onSelect }) {
   const isAi = variant === 'ai';
+  const isSelectable = Boolean(onSelect);
 
   return (
-    <div className="group h-[318px] overflow-hidden rounded-[8px] border border-[#E5E6EB] bg-white transition-all hover:shadow-[0_16px_32px_rgba(29,33,41,0.12)]">
-      <div className="relative h-[180px] overflow-hidden bg-[#DDE7FF]">
+    <div
+      onClick={isSelectable ? onSelect : undefined}
+      className={cn(
+        'group h-[318px] overflow-hidden rounded-[8px] border bg-white transition-all hover:shadow-[0_16px_32px_rgba(29,33,41,0.12)]',
+        isSelectable && 'cursor-pointer hover:border-[#1664FF] hover:shadow-[0_16px_32px_rgba(22,100,255,0.12)]',
+        isSelected ? 'border-[#1664FF]' : 'border-[#E5E6EB]'
+      )}
+    >
+      <div className={cn('relative h-[180px] overflow-hidden bg-[#DDE7FF]', isSelectable && 'transition-colors group-hover:bg-[#D4E2FF]')}>
         {isAi && <div className="absolute left-0 top-0 z-20 rounded-br-[4px] bg-gradient-to-r from-[#4096FF] to-[#9B6DFF] px-[12px] py-[4px] text-[13px] font-medium leading-[18px] text-white">AI 推荐</div>}
+        {isSelectable && isSelected && (
+          <img src="/template-selected.svg" alt="" className="absolute left-0 top-0 z-30 h-[24px] w-[24px]" />
+        )}
+        {isSelectable && !isSelected && (
+          <img
+            src="/template-selected.svg"
+            alt=""
+            className="absolute left-0 top-0 z-30 hidden h-[24px] w-[24px] group-hover:block"
+            style={{ opacity: hoverSelectIconOpacity / 100 }}
+          />
+        )}
 
         <div className="absolute inset-0 bg-[#87909F] opacity-0 transition-opacity group-hover:opacity-100" />
         <div className="absolute inset-0 z-10 flex items-center justify-center gap-[16px] opacity-0 transition-opacity group-hover:opacity-100">
-          <button type="button" onClick={onPreview} className="h-[34px] rounded-[4px] bg-white px-[18px] text-[14px] font-medium leading-[22px] text-[#1D2129] shadow-sm hover:bg-[#F7F8FA]">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onPreview();
+            }}
+            className="h-[34px] rounded-[4px] bg-white px-[18px] text-[14px] font-medium leading-[22px] text-[#1D2129] shadow-sm hover:bg-[#F7F8FA]"
+          >
             预览
           </button>
-          <button type="button" className="h-[34px] rounded-[4px] bg-[#0D6EFD] px-[18px] text-[14px] font-medium leading-[22px] text-white hover:bg-[#0B5FDD]">
+          <button
+            type="button"
+            onClick={(event) => event.stopPropagation()}
+            className="h-[34px] rounded-[4px] bg-[#0D6EFD] px-[18px] text-[14px] font-medium leading-[22px] text-white hover:bg-[#0B5FDD]"
+          >
             使用
           </button>
         </div>
@@ -535,7 +579,7 @@ function TemplateCard({ tpl, variant, isFavorite, onFavorite, onPreview, onCopyI
           }}
           className={cn(
             'absolute right-[12px] top-[10px] z-30 flex h-[24px] w-[24px] items-center justify-center rounded-[4px] transition-opacity',
-            isFavorite ? 'opacity-100 text-[#FFC046]' : 'opacity-0 text-white hover:text-[#FFC046] group-hover:opacity-100'
+            isFavorite ? 'opacity-100 text-[#FFC046]' : 'opacity-0 text-white hover:text-[#FFC046] group-hover:opacity-50'
           )}
           aria-label={isFavorite ? '取消收藏' : '收藏'}
         >
@@ -551,7 +595,10 @@ function TemplateCard({ tpl, variant, isFavorite, onFavorite, onPreview, onCopyI
           {!isAi && (
             <button
               type="button"
-              onClick={onCopyId}
+              onClick={(event) => {
+                event.stopPropagation();
+                onCopyId();
+              }}
               className="hidden shrink-0 text-[13px] leading-[20px] text-[#86909C] transition-colors hover:text-[#0D6EFD] group-hover:block"
               title="点击复制模板 ID"
             >
