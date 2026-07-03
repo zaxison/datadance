@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校企名片 - 院校资源画像匹配</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #F4F5F4;
+      --bg-surface: #FFFFFF;
+      --text-main: #111418;
+      --text-muted: #6B7075;
+      --border-light: #E6E8EB;
+      --accent-color: #0F5A3E; /* Deep forest green / teal */
+      --accent-bg: #E8F2EE;
+    }
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2, .serif-title {
+      font-family: 'Noto Serif SC', serif;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.06), 0 4px 8px -4px rgba(0,0,0,0.04);
+      border-color: #D1D6DB;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    .animate-slide-in {
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    // --- Data ---
+    const METRICS = {
+      partners: 49,
+      workstations: 16720,
+      capacity: 5165
+    };
+
+    const FILTERS = [
+      { key: 'level', label: '院校层次', options: ['全部', 'C9', '985', '211', '双一流', '本科', '专科'] },
+      { key: 'security', label: '安全等级', options: ['全部', '基础', 'L3', 'L4'] },
+      { key: 'feature', label: '院校特色', options: ['全部', '国防军工', '外语', '师范', '法学', '美术', '财经', '通信电子', '音乐'] },
+      { key: 'employment', label: '用工属性', options: ['全部', '全职', '兼职'] }
+    ];
+
+    const UNIVERSITIES = [
+      {
+        id: 1, name: '哈尔滨工业大学', badge: 'C9', location: '黑龙江省哈尔滨市', employment: ['兼职'],
+        security: '基础', status: '合作中', feature: '国防军工', contacts: ['林涛', '张明'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 60, workstations: 215,
+        tags: ['方舟tob-评估', 'Coding与GUI', '写作-评估', '视觉理解-评估']
+      },
+      {
+        id: 2, name: '西安交通大学', badge: 'C9', location: '陕西省西安市', employment: ['全职', '兼职'],
+        security: '基础', status: '合作中', feature: null, contacts: ['黄琳', '林涛'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 140, workstations: 424,
+        tags: ['视觉理解-评估', '代码-SFT', '模型数据采集']
+      },
+      {
+        id: 3, name: '复旦大学', badge: 'C9', location: '上海市', employment: ['兼职'],
+        security: '基础', status: '合作中', feature: null, contacts: ['陈雪'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 223, workstations: 684,
+        tags: ['Agent数据-SFT', 'Coding与GUI', '综合评估']
+      },
+      {
+        id: 4, name: '中南大学', badge: '985', location: '湖南省长沙市', employment: ['全职', '兼职'],
+        security: 'L4', status: '合作中', feature: null, contacts: ['杨帆'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 88, workstations: 269,
+        tags: ['垂类-SFT', '豆包搜索-标注', '模型-评估']
+      },
+      {
+        id: 5, name: '北京理工大学', badge: '985', location: '北京市', employment: ['兼职'],
+        security: '基础', status: '合作中', feature: '国防军工', contacts: ['孙鹏', '杨帆'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 30, workstations: 96,
+        tags: ['GUI-评估', '方舟tob-评估', '代码-SFT']
+      },
+      {
+        id: 6, name: '电子科技大学', badge: '985', location: '四川省成都市', employment: ['兼职'],
+        security: '基础', status: '合作中', feature: '通信电子', contacts: ['黄琳', '林涛'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 5, workstations: 35,
+        tags: ['AI医疗-评估', '代码-SFT', '视觉理解-SFT']
+      },
+      {
+        id: 7, name: '贵州大学', badge: '211', location: '贵州省贵阳市', employment: ['兼职', '全职'],
+        security: 'L4', status: '合作中', feature: null, contacts: ['张明'],
+        levels: ['本科生', '硕士生'], capacity: 1500, workstations: 4536,
+        tags: ['视觉理解-评估', '代码-SFT', '模型数据采集']
+      },
+      {
+        id: 8, name: '中国矿业大学', badge: '211', location: '江苏省徐州市', employment: ['兼职'],
+        security: '基础', status: '到期未续签', feature: null, contacts: ['孙鹏', '杨帆'],
+        levels: ['本科生', '硕士生', '博士生'], capacity: 78, workstations: 274,
+        tags: ['GUI-采集', 'GUI-SFT', '视频生成-标注']
+      }
+    ];
+
+    // --- Components ---
+    
+    // Icons
+    const Icons = {
+      Search: () => <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>,
+      MapPin: () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>,
+      Users: () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
+      Briefcase: () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>,
+      Shield: () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>,
+      Close: () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>,
+      ChevronLeft: () => <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>,
+      ChevronRight: () => <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+    };
+
+    const MetricCard = ({ label, value, unit }) => (
+      <div className="flex flex-col border-l border-gray-200 pl-6 first:border-0 first:pl-0">
+        <span className="text-[13px] text-gray-500 font-medium mb-1">{label}</span>
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-semibold text-gray-900 tracking-tight">{value.toLocaleString()}</span>
+          {unit && <span className="text-sm text-gray-500">{unit}</span>}
+        </div>
+      </div>
+    );
+
+    const Pill = ({ active, children, onClick }) => (
+      <button 
+        onClick={onClick}
+        className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-colors ${
+          active 
+            ? 'bg-[var(--accent-color)] text-white' 
+            : 'bg-white border border-[var(--border-light)] text-[var(--text-muted)] hover:border-gray-300 hover:text-gray-900'
+        }`}
+      >
+        {children}
+      </button>
+    );
+
+    const Avatar = ({ name }) => {
+      const initial = name.charAt(0);
+      return (
+        <div className="w-6 h-6 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-[11px] font-bold text-gray-600 shadow-sm" title={name}>
+          {initial}
+        </div>
+      );
+    };
+
+    const Badge = ({ text, type = 'default' }) => {
+      const styles = {
+        primary: 'bg-[var(--accent-bg)] text-[var(--accent-color)] border-[var(--accent-color)]/20',
+        c9: 'bg-[#F2E8FB] text-[#7B42C6] border-[#7B42C6]/20',
+        warning: 'bg-[#FEF3EB] text-[#B95000] border-[#B95000]/20',
+        default: 'bg-gray-100 text-gray-600 border-gray-200'
+      };
+      const style = styles[type] || styles.default;
+      
+      return (
+        <span className={`px-2 py-0.5 rounded text-[11px] font-bold tracking-wide border ${style}`}>
+          {text}
+        </span>
+      );
+    };
+
+    // Drawer Component (New)
+    const Drawer = ({ isOpen, onClose, data, onPrev, onNext, hasPrev, hasNext }) => {
+      if (!isOpen || !data) return null;
+      return (
+        <div className="fixed inset-0 z-[100] flex justify-end">
+          <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-slide-in">
+            {/* Header */}
+            <div className="px-6 py-6 border-b border-gray-100 flex justify-between items-start bg-gray-50/50">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-2">
+                  {data.name}
+                  {data.badge === 'C9' && <Badge text="C9" type="c9" />}
+                  {data.badge === '985' && <Badge text="985" type="primary" />}
+                  {data.badge === '211' && <Badge text="211" type="default" />}
+                </h2>
+                <div className="text-[13px] text-gray-500 flex items-center gap-4">
+                  <span className="flex items-center gap-1"><Icons.MapPin /> {data.location}</span>
+                  <span className="flex items-center gap-1"><Icons.Shield /> {data.security}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 -mt-2 -mr-2">
+                <div className="flex items-center bg-gray-100/80 border border-gray-200/60 rounded-lg p-0.5">
+                  <button onClick={onPrev} disabled={!hasPrev} className={`p-1.5 rounded-md transition-colors ${hasPrev ? 'text-gray-600 hover:bg-white hover:shadow-sm' : 'text-gray-300 cursor-not-allowed'}`} title="上一个">
+                    <Icons.ChevronLeft />
+                  </button>
+                  <button onClick={onNext} disabled={!hasNext} className={`p-1.5 rounded-md transition-colors ${hasNext ? 'text-gray-600 hover:bg-white hover:shadow-sm' : 'text-gray-300 cursor-not-allowed'}`} title="下一个">
+                    <Icons.ChevronRight />
+                  </button>
+                </div>
+                <div className="w-px h-5 bg-gray-200 mx-1"></div>
+                <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors" title="关闭">
+                  <Icons.Close />
+                </button>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+              {/* Section 1: 核心指标 */}
+              <section>
+                <h3 className="text-[12px] font-bold text-gray-900 uppercase tracking-wider mb-4 border-l-2 border-[var(--accent-color)] pl-2">核心指标</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-[var(--accent-bg)] border border-[var(--accent-color)]/10 p-4 rounded-xl">
+                    <div className="text-[12px] text-[var(--accent-color)] font-medium mb-1">总招募能力</div>
+                    <div className="text-2xl font-bold text-[var(--accent-color)]">{data.capacity} <span className="text-sm font-normal">人/周</span></div>
+                  </div>
+                  <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl">
+                    <div className="text-[12px] text-gray-500 font-medium mb-1">可用工位</div>
+                    <div className="text-2xl font-bold text-gray-900">{data.workstations} <span className="text-sm font-normal">个</span></div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 2: 招募结构 */}
+              <section>
+                <h3 className="text-[12px] font-bold text-gray-900 uppercase tracking-wider mb-4 border-l-2 border-[var(--accent-color)] pl-2">招募层次结构</h3>
+                <div className="space-y-3">
+                  {data.levels.map((lvl, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0">
+                      <span className="text-[13px] text-gray-600">{lvl}</span>
+                      <span className="text-[13px] font-medium text-gray-900">
+                        {Math.floor(data.capacity / data.levels.length)} 人/周
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Section 3: 标签与属性 */}
+              <section>
+                <h3 className="text-[12px] font-bold text-gray-900 uppercase tracking-wider mb-4 border-l-2 border-[var(--accent-color)] pl-2">属性标签</h3>
+                <div className="flex flex-wrap gap-2">
+                  {data.employment.map(e => <span key={e} className="text-[13px] text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-md flex items-center gap-1.5"><Icons.Briefcase /> {e}</span>)}
+                  {data.feature && <span className="text-[13px] text-[var(--accent-color)] bg-[var(--accent-bg)] px-3 py-1.5 rounded-md">{data.feature}</span>}
+                </div>
+              </section>
+
+              {/* Section 4: 历史项目 */}
+              <section>
+                <h3 className="text-[12px] font-bold text-gray-900 uppercase tracking-wider mb-4 border-l-2 border-[var(--accent-color)] pl-2">项目经验</h3>
+                <div className="flex flex-wrap gap-2">
+                  {data.tags.map((tag, i) => (
+                    <span key={i} className="text-[13px] text-gray-600 bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-md">{tag}</span>
+                  ))}
+                </div>
+              </section>
+              
+              {/* Section 5: 对接人 */}
+              <section>
+                <h3 className="text-[12px] font-bold text-gray-900 uppercase tracking-wider mb-4 border-l-2 border-[var(--accent-color)] pl-2">对接人员</h3>
+                <div className="flex gap-4">
+                  {data.contacts.map((c, i) => (
+                    <div key={i} className="flex items-center gap-3 bg-white border border-gray-100 p-3 rounded-lg flex-1">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-sm font-bold text-gray-600 shadow-sm">{c.charAt(0)}</div>
+                      <div>
+                        <div className="text-[13px] font-bold text-gray-900">{c}</div>
+                        <div className="text-[11px] text-gray-500">业务BP</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // List View Row (New)
+    const UniversityRow = ({ data, onViewDetails }) => {
+      const isExpired = data.status === '到期未续签';
+      return (
+        <tr className={`border-b border-gray-100 hover:bg-gray-50 transition-colors group ${isExpired ? 'opacity-70' : ''}`}>
+          <td className="py-4 px-5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-sm font-bold text-gray-400">
+                {data.name.charAt(0)}
+              </div>
+              <div>
+                <div className="font-bold text-gray-900 text-sm flex items-center gap-2">
+                  {data.name}
+                  {data.badge === 'C9' && <Badge text="C9" type="c9" />}
+                  {data.badge === '985' && <Badge text="985" type="primary" />}
+                  {data.badge === '211' && <Badge text="211" type="default" />}
+                  {isExpired && <Badge text="到期" type="warning" />}
+                </div>
+                <div className="text-[12px] text-gray-500 mt-1 flex items-center gap-1">
+                  <Icons.MapPin /> {data.location}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td className="py-4 px-4">
+            <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+              {data.tags.slice(0, 2).map((tag, i) => (
+                <span key={i} className="text-[11px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 truncate max-w-[90px]">{tag}</span>
+              ))}
+              {data.tags.length > 2 && <span className="text-[11px] text-gray-400 font-medium">+{data.tags.length - 2}</span>}
+            </div>
+          </td>
+          <td className="py-4 px-4">
+            <div className="text-sm font-bold text-gray-900">{data.capacity} <span className="text-[11px] text-gray-500 font-normal">/周</span></div>
+          </td>
+          <td className="py-4 px-4">
+            <div className="text-sm font-bold text-gray-900">{data.workstations} <span className="text-[11px] text-gray-500 font-normal">个</span></div>
+          </td>
+          <td className="py-4 px-4">
+            <div className="flex -space-x-1.5">
+              {data.contacts.map((c, i) => <Avatar key={i} name={c} />)}
+            </div>
+          </td>
+          <td className="py-4 px-5 text-right">
+            <button 
+              onClick={() => onViewDetails(data)}
+              className="text-[13px] font-semibold text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+            >
+              查看详情 →
+            </button>
+          </td>
+        </tr>
+      );
+    };
+
+    const UniversityCard = ({ data, onViewDetails }) => {
+      const isExpired = data.status === '到期未续签';
+      
+      return (
+        <div className={`bg-white rounded-xl border border-[var(--border-light)] p-5 card-hover flex flex-col h-full ${isExpired ? 'opacity-70' : ''}`}>
+          {/* Header */}
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-lg font-bold text-gray-400">
+                {data.name.charAt(0)}
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900 leading-tight flex items-center gap-2">
+                  {data.name}
+                  {data.badge === 'C9' && <Badge text="C9" type="c9" />}
+                  {data.badge === '985' && <Badge text="985" type="primary" />}
+                  {data.badge === '211' && <Badge text="211" type="default" />}
+                </h3>
+                <div className="text-[12px] text-gray-500 mt-1 flex items-center gap-3">
+                  <span className="flex items-center gap-1"><Icons.MapPin /> {data.location}</span>
+                  <span className="flex items-center gap-1"><Icons.Shield /> {data.security}</span>
+                </div>
+              </div>
+            </div>
+            {isExpired && <Badge text="到期" type="warning" />}
+          </div>
+
+          {/* Key Metrics */}
+          <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg mb-4">
+            <div>
+              <div className="text-[11px] text-gray-500 uppercase tracking-wider mb-1">招募能力</div>
+              <div className="text-lg font-semibold text-gray-900 leading-none">
+                {data.capacity} <span className="text-[12px] text-gray-500 font-normal">人/周</span>
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] text-gray-500 uppercase tracking-wider mb-1">可用工位</div>
+              <div className="text-lg font-semibold text-gray-900 leading-none">
+                {data.workstations} <span className="text-[12px] text-gray-500 font-normal">个</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Details */}
+          <div className="flex-1">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {data.employment.map(e => <span key={e} className="text-[12px] text-gray-600 bg-white border border-gray-200 px-2 py-1 rounded flex items-center gap-1"><Icons.Briefcase /> {e}</span>)}
+              {data.feature && <span className="text-[12px] text-[#0F5A3E] bg-[#E8F2EE] px-2 py-1 rounded">{data.feature}</span>}
+            </div>
+            
+            <div className="mb-4">
+              <div className="text-[11px] text-gray-500 mb-1.5">项目经验标签</div>
+              <div className="flex flex-wrap gap-1.5">
+                {data.tags.map((tag, i) => (
+                  <span key={i} className="text-[11px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="pt-4 border-t border-gray-100 flex justify-between items-center mt-auto">
+            <div className="text-[12px] text-gray-500 flex items-center gap-2">
+              <span>对接人:</span>
+              <div className="flex -space-x-1.5">
+                {data.contacts.map((c, i) => <Avatar key={i} name={c} />)}
+              </div>
+            </div>
+            <button 
+              onClick={() => onViewDetails(data)}
+              className="text-[13px] font-medium text-[var(--accent-color)] hover:text-green-800 transition-colors"
+            >
+              查看详情 →
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    function App() {
+      const [activeFilters, setActiveFilters] = useState({
+        level: '全部',
+        security: '全部',
+        feature: '全部',
+        employment: '全部'
+      });
+      const [searchQuery, setSearchQuery] = useState('');
+      const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
+      const [selectedUni, setSelectedUni] = useState(null);
+
+      const handleFilter = (key, value) => {
+        setActiveFilters(prev => ({ ...prev, [key]: value }));
+      };
+
+      // Filter logic
+      const filteredData = useMemo(() => {
+        return UNIVERSITIES.filter(u => {
+          if (activeFilters.level !== '全部' && u.badge !== activeFilters.level && !u.levels.includes(activeFilters.level)) return false;
+          if (activeFilters.security !== '全部' && u.security !== activeFilters.security) return false;
+          if (activeFilters.feature !== '全部' && u.feature !== activeFilters.feature) return false;
+          if (activeFilters.employment !== '全部' && !u.employment.includes(activeFilters.employment)) return false;
+          if (searchQuery && !u.name.includes(searchQuery)) return false;
+          return true;
+        });
+      }, [activeFilters, searchQuery]);
+
+      const currentIndex = useMemo(() => {
+        if (!selectedUni) return -1;
+        return filteredData.findIndex(u => u.id === selectedUni.id);
+      }, [selectedUni, filteredData]);
+
+      const hasPrev = currentIndex > 0;
+      const hasNext = currentIndex !== -1 && currentIndex < filteredData.length - 1;
+
+      const handlePrev = () => {
+        if (hasPrev) setSelectedUni(filteredData[currentIndex - 1]);
+      };
+
+      const handleNext = () => {
+        if (hasNext) setSelectedUni(filteredData[currentIndex + 1]);
+      };
+
+      return (
+        <div className="min-h-screen pb-20">
+          {/* Header */}
+          <header className="glass-panel sticky top-0 z-50 pt-10 pb-6 px-8 md:px-12">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <h1 className="text-3xl serif-title font-bold text-gray-900 mb-2">校企名片</h1>
+                <p className="text-sm text-gray-500">查询院校能力画像，快速匹配项目资源需求</p>
+              </div>
+              
+              <div className="flex gap-8">
+                <MetricCard label="合作院校" value={METRICS.partners} unit="家" />
+                <MetricCard label="总可用工位" value={METRICS.workstations} unit="个" />
+                <MetricCard label="总招募能力" value={METRICS.capacity} unit="/周" />
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-7xl mx-auto px-8 md:px-12 mt-8 flex flex-col lg:flex-row gap-8">
+            {/* Sidebar Filters */}
+            <aside className="w-full lg:w-64 shrink-0">
+              <div className="bg-white rounded-xl border border-[var(--border-light)] p-5 sticky top-40">
+                <div className="relative mb-6">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Icons.Search />
+                  </div>
+                  <input 
+                    type="text" 
+                    placeholder="搜索院校名称..." 
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] focus:border-transparent transition-all"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-6">
+                  {FILTERS.map(group => (
+                    <div key={group.key}>
+                      <h4 className="text-[12px] font-bold text-gray-900 uppercase tracking-wider mb-3">{group.label}</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {group.options.map(opt => (
+                          <Pill 
+                            key={opt} 
+                            active={activeFilters[group.key] === opt}
+                            onClick={() => handleFilter(group.key, opt)}
+                          >
+                            {opt}
+                          </Pill>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* Content Section */}
+            <section className="flex-1">
+              <div className="mb-4 text-sm text-gray-500 flex justify-between items-center">
+                <span>找到 {filteredData.length} 家符合条件的院校</span>
+                <div className="flex gap-1.5 bg-gray-200/50 p-1 rounded-lg">
+                  <button 
+                    onClick={() => setViewMode('card')}
+                    className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-all ${viewMode === 'card' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    卡片视图
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('list')}
+                    className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-all ${viewMode === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    列表视图
+                  </button>
+                </div>
+              </div>
+              
+              {filteredData.length > 0 ? (
+                viewMode === 'card' ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    {filteredData.map(uni => <UniversityCard key={uni.id} data={uni} onViewDetails={() => setSelectedUni(uni)} />)}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-xl border border-[var(--border-light)] overflow-hidden shadow-sm">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                          <th className="py-3 px-5 text-[12px] font-bold text-gray-500 uppercase tracking-wider">院校名称</th>
+                          <th className="py-3 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">经验标签</th>
+                          <th className="py-3 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">招募能力</th>
+                          <th className="py-3 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">可用工位</th>
+                          <th className="py-3 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">对接人</th>
+                          <th className="py-3 px-5 text-right"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredData.map(uni => <UniversityRow key={uni.id} data={uni} onViewDetails={setSelectedUni} />)}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              ) : (
+                <div className="py-20 text-center border border-dashed border-gray-300 rounded-xl bg-gray-50">
+                  <p className="text-gray-500">未找到匹配的院校资源</p>
+                  <button 
+                    onClick={() => setActiveFilters({level: '全部', security: '全部', feature: '全部', employment: '全部'})}
+                    className="mt-3 text-[var(--accent-color)] font-medium text-sm hover:underline"
+                  >
+                    清除所有筛选
+                  </button>
+                </div>
+              )}
+            </section>
+          </main>
+          
+          {/* Details Drawer */}
+          <Drawer 
+            isOpen={!!selectedUni} 
+            onClose={() => setSelectedUni(null)} 
+            data={selectedUni}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            hasPrev={hasPrev}
+            hasNext={hasNext}
+          />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
