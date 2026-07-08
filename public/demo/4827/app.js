@@ -12,12 +12,17 @@ const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&
 
 function sideGroups() {
   return [
-    ["首页"], ["需求管理"], ["项目管理", "项目列表", "自建评估", "资源推荐"],
-    ["商务管理", "资源分发", "投标管理", "项目订单", "资源缺口"],
-    ["财务管理", "报价结算", "对账管理", "计提管理"],
-    ["资源管理", "资源首页", "供应商管理", "团队管理", "S项目团队"],
-    ["任务管理", "任务列表", "我的任务", "任务统计", "题目查询", "模拟投放"],
-    ["合规安全", "IP地址策略配置", "风险明细", "审批管理"]
+    { id: "首页", icon: "menu-home.svg" },
+    { id: "项目管理", icon: "menu-project-management.svg" },
+    { id: "数据生产", icon: "menu-data-generation.svg", children: ["任务列表", "我的任务", "组别管理"] },
+    { id: "模型评估", icon: "menu-model-evaluation.svg", children: ["题库管理", "抓取任务", "任务列表", "我的任务", "评估报告", "人员标签", "数据可视化"] },
+    { id: "质量管理", icon: "menu-quality-management.svg", children: ["申诉中心"] },
+    { id: "模板管理", icon: "menu-template.svg" },
+    { id: "资产管理", icon: "menu-asset-management.svg" },
+    { id: "算子管理", icon: "menu-operator-management.svg" },
+    { id: "用户管理", icon: "menu-user-management.svg", children: ["标签管理", "团队管理"] },
+    { id: "租户管理", icon: "menu-tenant-management.svg" },
+    { id: "交互演示", icon: "menu-interaction-demo.svg", active: true }
   ];
 }
 
@@ -37,10 +42,14 @@ function filteredSchools() {
 }
 
 function renderSideMenu() {
-  $("#sideMenu").innerHTML = sideGroups().map(([title, ...items]) => `
-    <section class="menu-group">
-      <button class="menu-parent" type="button"><i></i>${esc(title)}</button>
-      ${items.length ? `<div class="menu-children">${items.map((item) => `<button type="button" class="${item === "任务列表" ? "active" : ""}">${esc(item)}</button>`).join("")}</div>` : ""}
+  $("#sideMenu").innerHTML = sideGroups().map((item) => `
+    <section class="menu-group ${item.active ? "active" : ""}">
+      <button class="menu-parent ${item.active ? "active" : ""}" type="button">
+        <img src="./assets/${esc(item.icon)}" alt="">
+        <span>${esc(item.id)}</span>
+        ${item.children ? `<em>⌄</em>` : ""}
+      </button>
+      ${item.children ? `<div class="menu-children">${item.children.map((child) => `<button type="button">${esc(child)}</button>`).join("")}</div>` : ""}
     </section>
   `).join("");
 }
