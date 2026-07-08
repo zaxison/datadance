@@ -9,13 +9,28 @@
 <body>
   <div class="page-bg"></div>
   <div class="app">
-    <aside class="side-nav">
-      <div class="sidebar-brand">
-        <img src="./assets/logo.png" alt="">
-        <span>DataDance</span>
+    <aside class="side-nav is-collapsed" id="dataDanceSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-logo" id="sidebarLogo" type="button" aria-label="展开侧栏">
+          <span class="logo-mark">
+            <img class="logo-image" src="./assets/logo.png" alt="">
+            <img class="expand-default" src="./assets/expand-default.svg" alt="">
+            <img class="expand-hover" src="./assets/expand-hover.svg" alt="">
+          </span>
+          <span class="logo-text">DataDance</span>
+        </button>
+        <button class="side-collapse" id="sidebarCollapse" type="button" aria-label="收起侧栏">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 19h16M9 5v14M15 9l-3 3 3 3"></path></svg>
+        </button>
       </div>
       <nav id="sideMenu"></nav>
-      <button class="side-collapse" type="button" aria-label="收起侧栏">‹</button>
+      <div class="sidebar-user" id="sidebarUser">
+        <img src="./assets/avatar.png" alt="">
+        <div>
+          <strong>zhouhongxiang</strong>
+          <span>Medical</span>
+        </div>
+      </div>
     </aside>
 
     <main class="content-shell">
