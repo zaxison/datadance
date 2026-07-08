@@ -235,6 +235,7 @@ svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: 
   font-style: normal;
   transition: transform .3s ease-in-out, background-color .16s ease;
 }
+.side-nav.is-collapsed .menu-parent em { display: none; }
 .menu-parent em.is-closed { transform: rotate(180deg); }
 .menu-parent:hover,
 .menu-parent.active {
