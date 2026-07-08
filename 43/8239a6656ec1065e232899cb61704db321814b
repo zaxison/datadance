@@ -1,0 +1,29 @@
+public/demo/4827/app.js
+  s_d087acbff0591f::t_7fdca4bcb70f9a 80-84,94-108
+public/demo/4827/assets/card-assets/logo-cumt.svg
+  s_d087acbff0591f::t_d509d7bb73922f 1-19
+public/demo/4827/assets/card-assets/logo-gzu.svg
+  s_d087acbff0591f::t_5399b42bbf8ead 1-18
+public/demo/4827/assets/card-assets/logo-uestc.svg
+  s_d087acbff0591f::t_525baa184361e6 1-24
+public/demo/4827/data.js
+  s_d087acbff0591f::t_f1dcb251612422 10,20,30,40,50,60,70,80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "438239a6656ec1065e232899cb61704db321814b",
+  "prompts": {},
+  "sessions": {
+    "s_d087acbff0591f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef90f-9ed7-7bf2-9d2e-58f0d682d2a4",
+        "model": "unknown"
+      },
+      "human_author": "Trae User <user@example.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
