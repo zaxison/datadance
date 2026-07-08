@@ -7,7 +7,7 @@ window.AIDP_FILTERS = [
 
 window.AIDP_SCHOOLS = [
   {
-    id: 1, name: "哈尔滨工业大学", code: "EFS", logo: "card-assets/Property 1=哈尔滨工业大学-logo 1.svg", level: "985",
+    id: 1, name: "哈尔滨工业大学", code: "EFS", logo: "card-assets/logo-hit.svg", level: "985",
     city: "黑龙江省哈尔滨市", security: "基础", status: "合作中",
     feature: "国防军工", featureFull: "国防军工-国防七子", employment: ["兼职"],
     recruitSpeed: 60, seats: 215,
@@ -17,7 +17,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 2, name: "西安交通大学", code: "EFM", logo: "card-assets/Property 1=西安交通大学-logo 1.svg", level: "211",
+    id: 2, name: "西安交通大学", code: "EFM", logo: "card-assets/logo-xjtu.svg", level: "211",
     city: "陕西省西安市", security: "L3", status: "合作中",
     feature: "通信电子", featureFull: "通信电子-两电一邮", employment: ["兼职"],
     recruitSpeed: 60, seats: 215,
@@ -27,7 +27,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 3, name: "复旦大学", code: "EFT", logo: "card-assets/Property 1=复旦大学-logo 1.svg", level: "QS100",
+    id: 3, name: "复旦大学", code: "EFT", logo: "card-assets/logo-fudan.svg", level: "QS100",
     city: "上海市", security: "L3", status: "合作中",
     feature: "财经", featureFull: "财经-综合重点", employment: ["兼职"],
     recruitSpeed: 223, seats: 684,
@@ -37,7 +37,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 4, name: "中南大学", code: "EEW", logo: "card-assets/Property 1=中南大学-logo 1.svg", level: "本科",
+    id: 4, name: "中南大学", code: "EEW", logo: "card-assets/logo-csu.svg", level: "本科",
     city: "湖南省长沙市", security: "L3", status: "合作中",
     feature: "美术", featureFull: "美术-综合设计", employment: ["全职", "兼职"],
     recruitSpeed: 88, seats: 269,
@@ -47,7 +47,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 5, name: "北京理工大学", code: "EGH", logo: "card-assets/Property 1=北京理工大学-logo 1.svg", level: "985",
+    id: 5, name: "北京理工大学", code: "EGH", logo: "card-assets/logo-bit.svg", level: "985",
     city: "北京市", security: "基础", status: "合作中",
     feature: "国防军工", featureFull: "国防军工-国防七子", employment: ["兼职"],
     recruitSpeed: 30, seats: 96,
@@ -57,7 +57,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 6, name: "电子科技大学", code: "EFW", logo: "card-assets/Property 1=电子科技大学-logo 1.svg", level: "985",
+    id: 6, name: "电子科技大学", code: "EFW", logo: "card-assets/logo-uestc.svg", level: "985",
     city: "四川省成都市", security: "基础", status: "合作中",
     feature: "通信电子", featureFull: "通信电子-两电一邮", employment: ["兼职"],
     recruitSpeed: 5, seats: 35,
@@ -67,7 +67,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 7, name: "贵州大学", code: "EET", logo: "card-assets/Property 1=贵州大学-logo 1.svg", level: "211",
+    id: 7, name: "贵州大学", code: "EET", logo: "card-assets/logo-gzu.svg", level: "211",
     city: "贵州省贵阳市", security: "L4", status: "到期未续签",
     feature: "财经", featureFull: "财经-区域重点", employment: ["兼职", "全职"],
     recruitSpeed: 1500, seats: 4536,
@@ -77,7 +77,7 @@ window.AIDP_SCHOOLS = [
     contacts: ["周鸿翔", "王孟玉"]
   },
   {
-    id: 8, name: "中国矿业大学", code: "EFK", logo: "card-assets/Property 1=中国矿业大学-logo 1.svg", level: "211",
+    id: 8, name: "中国矿业大学", code: "EFK", logo: "card-assets/logo-cumt.svg", level: "211",
     city: "江苏省徐州市", security: "基础", status: "到期未续签",
     feature: "国防军工", featureFull: "国防军工-能源矿业", employment: ["兼职"],
     recruitSpeed: 78, seats: 274,

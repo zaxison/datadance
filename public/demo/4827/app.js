@@ -77,7 +77,11 @@ function logo(school) {
 }
 
 function icon(name, className = "") {
-  return `<img class="meta-icon ${className}" src="./assets/card-assets/${esc(name)}.svg" alt="">`;
+  const iconFiles = {
+    "地点": "location.svg",
+    "安全": "security.svg"
+  };
+  return `<img class="meta-icon ${className}" src="./assets/card-assets/${esc(iconFiles[name] || name)}" alt="">`;
 }
 
 function badgeType(text) {
@@ -87,7 +91,21 @@ function badgeType(text) {
 }
 
 function assetBadge(text, className = "") {
-  return `<img class="asset-badge ${className}" src="./assets/card-assets/Property 1=${esc(text)}.svg" alt="${esc(text)}">`;
+  const badgeFiles = {
+    "985": "badge-985.svg",
+    "211": "badge-211.svg",
+    "QS100": "badge-qs100.svg",
+    "QS200": "badge-qs200.svg",
+    "本科": "badge-undergrad.svg",
+    "专科": "badge-junior.svg",
+    "双一流": "badge-double-first.svg",
+    "合作中": "status-active.svg",
+    "到期未续签": "status-expired.svg",
+    "合规冻结中": "status-frozen.svg",
+    "全职": "employment-fulltime.svg",
+    "兼职": "employment-parttime.svg"
+  };
+  return `<img class="asset-badge ${className}" src="./assets/card-assets/${esc(badgeFiles[text] || text)}" alt="${esc(text)}">`;
 }
 
 function levelBadge(school) {
