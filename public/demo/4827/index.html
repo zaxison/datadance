@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDP 校企名片</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-bg"></div>
+  <div class="app">
+    <header class="topbar">
+      <div class="platform-logo" aria-label="AIDP"></div>
+      <div class="top-right">
+        <button class="top-icon" type="button" aria-label="参考"><span>?</span></button>
+        <button class="top-icon" type="button" aria-label="邮件"><span>@</span></button>
+        <button class="tenant" type="button">租户：DMC</button>
+        <button class="user-avatar" type="button" aria-label="个人中心"></button>
+      </div>
+    </header>
+
+    <aside class="side-nav">
+      <nav id="sideMenu"></nav>
+      <button class="side-collapse" type="button" aria-label="收起侧栏">‹</button>
+    </aside>
+
+    <main class="content-shell">
+      <div class="content-surface"></div>
+      <section id="directoryPage" class="directory-page">
+        <div class="page-title">校企名片</div>
+        <div class="metrics" id="metrics"></div>
+
+        <aside class="filters">
+          <label class="searchbox">
+            <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"></circle><path d="m10.5 10.5 3 3"></path></svg>
+            <input id="searchInput" type="search" placeholder="名称/城市/专业/项目关键词" autocomplete="off">
+          </label>
+          <div id="filterList"></div>
+        </aside>
+
+        <section class="results">
+          <div class="results-head">
+            <p>找到 <b id="resultCount">0</b> 家符合条件的院校</p>
+            <div class="view-switch">
+              <button type="button" data-view="card" class="active">卡片</button>
+              <button type="button" data-view="list">列表</button>
+            </div>
+          </div>
+          <div id="cardGrid" class="card-grid"></div>
+          <div id="tablePanel" class="table-panel" hidden></div>
+          <div id="emptyState" class="empty-state" hidden>暂无符合条件的院校</div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <section id="detailPage" class="detail-page" hidden>
+    <div class="page-title">校企名片</div>
+    <div class="detail-actions">
+      <div class="detail-nav">
+        <button id="prevSchool" type="button" aria-label="上一个">‹</button>
+        <button id="nextSchool" type="button" aria-label="下一个">›</button>
+      </div>
+      <button id="closeDetail" class="detail-close" type="button" aria-label="关闭">×</button>
+    </div>
+    <article id="detailPanel" class="detail-panel"></article>
+  </section>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
